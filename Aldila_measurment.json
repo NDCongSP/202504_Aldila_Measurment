@@ -11,7 +11,7 @@
   "IsReadOnly": true,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:15.8188461+07:00",
-  "ModifiedDate": "2025-04-12T14:40:20.9929251+07:00",
+  "ModifiedDate": "2025-04-19T16:02:27.9062727+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -31,12 +31,12 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:39.6106996+07:00",
-  "ModifiedDate": "2025-04-12T14:40:20.9929251+07:00",
+  "ModifiedDate": "2025-04-19T16:02:27.9072699+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
   "Parameters": {
-    "Port": "COM3",
+    "Port": "COM10",
     "ScanRate": "1000",
     "Baudrate": "9600",
     "Parity": "None",
@@ -55,7 +55,7 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:53.7512172+07:00",
-  "ModifiedDate": "2025-04-12T14:40:20.9929251+07:00",
+  "ModifiedDate": "2025-04-19T16:02:27.9072699+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -75,7 +75,7 @@
   "HaveTags": true,
   "Tags": [
     {
-  "Name": "Sensor_1",
+  "Name": "SENSOR_1",
   "Description": null,
   "ItemType": "Tag",
   "IsReadOnly": false,
@@ -102,7 +102,7 @@
   "Tags": []
 },
     {
-  "Name": "Sensor_2",
+  "Name": "SENSOR_2",
   "Description": null,
   "ItemType": "Tag",
   "IsReadOnly": false,
@@ -129,7 +129,7 @@
   "Tags": []
 },
     {
-  "Name": "Sensor_3",
+  "Name": "SENSOR_3",
   "Description": null,
   "ItemType": "Tag",
   "IsReadOnly": false,

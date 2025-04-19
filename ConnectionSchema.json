@@ -1,0 +1,109 @@
+{
+  "ItemType": 0,
+  "ServerAddress": "127.0.0.1",
+  "Port": 8800,
+  "CommunicationMode": 0,
+  "RefreshRate": 1000,
+  "CreatedDate": "2025-04-19T15:56:41.504246+07:00",
+  "Username": null,
+  "Password": null,
+  "Childs": [
+    {
+      "ItemType": 1,
+      "Name": "Local Station",
+      "Path": "Local Station",
+      "Description": null,
+      "DisplayInfo": null,
+      "Error": null,
+      "ConnectionStatus": 1,
+      "Childs": [
+        {
+          "ItemType": 3,
+          "Name": "Channel1",
+          "Path": "Local Station/Channel1",
+          "Description": null,
+          "DisplayInfo": "ModbusRTU COM10.9600.8.N.1",
+          "Error": null,
+          "ConnectionStatus": 0,
+          "Childs": [
+            {
+              "ItemType": 4,
+              "Name": "Device",
+              "Path": "Local Station/Channel1/Device",
+              "Description": null,
+              "DisplayInfo": "1",
+              "Error": null,
+              "ConnectionStatus": 0,
+              "Childs": [
+                {
+                  "ItemType": 6,
+                  "Name": "SENSOR_1",
+                  "Path": "Local Station/Channel1/Device/SENSOR_1",
+                  "Description": null,
+                  "DisplayInfo": null,
+                  "Error": null,
+                  "ConnectionStatus": 0,
+                  "Childs": [],
+                  "Properties": {
+                    "DataType": "Word",
+                    "Address": "400001"
+                  }
+                },
+                {
+                  "ItemType": 6,
+                  "Name": "SENSOR_2",
+                  "Path": "Local Station/Channel1/Device/SENSOR_2",
+                  "Description": null,
+                  "DisplayInfo": null,
+                  "Error": null,
+                  "ConnectionStatus": 0,
+                  "Childs": [],
+                  "Properties": {
+                    "DataType": "Word",
+                    "Address": "400002"
+                  }
+                },
+                {
+                  "ItemType": 6,
+                  "Name": "SENSOR_3",
+                  "Path": "Local Station/Channel1/Device/SENSOR_3",
+                  "Description": null,
+                  "DisplayInfo": null,
+                  "Error": null,
+                  "ConnectionStatus": 0,
+                  "Childs": [],
+                  "Properties": {
+                    "DataType": "Word",
+                    "Address": "400003"
+                  }
+                }
+              ],
+              "Properties": {
+                "DeviceId": "1",
+                "Timeout": "1000",
+                "TryReadWriteTimes": "3",
+                "ReadMode": "Block",
+                "InputContactReadBlockSettings": "[]",
+                "OutputCoilsReadBlockSettings": "[]",
+                "InputRegisterReadBlockSettings": "[]",
+                "HoldingRegisterReadBlockSettings": "[]"
+              }
+            }
+          ],
+          "Properties": {
+            "Port": "COM10",
+            "ScanRate": "1000",
+            "Baudrate": "9600",
+            "Parity": "None",
+            "StopBits": "One",
+            "DelayBetweenPool": "5",
+            "MaxWritesCount": "10",
+            "DataBits": "8"
+          }
+        }
+      ],
+      "Properties": {}
+    }
+  ],
+  "Properties": {}
+}
