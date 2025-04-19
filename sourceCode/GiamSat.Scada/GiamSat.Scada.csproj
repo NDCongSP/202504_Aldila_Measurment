@@ -40,10 +40,12 @@
     <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.2.0.151\lib\net461\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="EasyScada.Core">
+    <Reference Include="EasyScada.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\PT Automation Solution\Easy Driver Server\Toolkit\EasyScada.Core.dll</HintPath>
     </Reference>
-    <Reference Include="EasyScada.Winforms.Controls">
+    <Reference Include="EasyScada.Winforms.Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\PT Automation Solution\Easy Driver Server\Toolkit\EasyScada.Winforms.Controls.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Client">
@@ -109,11 +111,20 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSettings.Designer.cs">
+      <DependentUpon>frmSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="GlobalVariable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSettings.resx">
+      <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -141,12 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GiamSat.Models\GiamSat.Models.csproj">
-      <Project>{bcd2bfea-4b8e-41c2-b297-fa5f39bd38b2}</Project>
-      <Name>GiamSat.Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LogoIco.ico" />
