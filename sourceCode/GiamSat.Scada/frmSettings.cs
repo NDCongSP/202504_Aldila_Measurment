@@ -235,65 +235,65 @@ namespace GiamSat.Scada
             _txtFromV1.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V1).FromValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV1.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V1).ToValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV3.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V3).FromValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV3.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V3).ToValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV6.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V6).FromValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV6.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V6).ToValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV9.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V9).FromValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV9.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.V9).ToValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromVSS.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.VSS).FromValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToVSS.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZonName == EnumArrowZoneName.VSS).ToValue
+                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             #endregion
@@ -488,11 +488,11 @@ namespace GiamSat.Scada
                 Console.WriteLine("File does not exist. Creating default JSON file...");
 
                 var arrowZone = new List<ArrowZone>();
-                arrowZone.Add(new ArrowZone() { FromValue = 0, ToValue = 1, ZonName = EnumArrowZoneName.V1 });
-                arrowZone.Add(new ArrowZone() { FromValue = 1.1, ToValue = 2, ZonName = EnumArrowZoneName.V3 });
-                arrowZone.Add(new ArrowZone() { FromValue = 2.1, ToValue = 3, ZonName = EnumArrowZoneName.V6 });
-                arrowZone.Add(new ArrowZone() { FromValue = 3.1, ToValue = 5, ZonName = EnumArrowZoneName.V9 });
-                arrowZone.Add(new ArrowZone() { FromValue = 4.1, ToValue = 5, ZonName = EnumArrowZoneName.VSS });
+                arrowZone.Add(new ArrowZone() { FromValue = 0, ToValue = 1, ZoneName = EnumArrowZoneName.V1 });
+                arrowZone.Add(new ArrowZone() { FromValue = 1.1, ToValue = 2, ZoneName = EnumArrowZoneName.V3 });
+                arrowZone.Add(new ArrowZone() { FromValue = 2.1, ToValue = 3, ZoneName = EnumArrowZoneName.V6 });
+                arrowZone.Add(new ArrowZone() { FromValue = 3.1, ToValue = 5, ZoneName = EnumArrowZoneName.V9 });
+                arrowZone.Add(new ArrowZone() { FromValue = 4.1, ToValue = 5, ZoneName = EnumArrowZoneName.VSS });
 
                 var arrowSettings = new ArrowSettingsModel()
                 {
@@ -506,7 +506,7 @@ namespace GiamSat.Scada
 
                 var appleZone = new List<AppleZone>();
                 appleZone.Add(new AppleZone() { FromValue = 0, ToValue = 1, ZoneName = EnumApple_Ok_NG.OK });
-                appleZone.Add(new AppleZone() { FromValue = 1.1, ToValue = 2, ZoneName = EnumApple_Ok_NG.NG });
+                appleZone.Add(new AppleZone() { FromValue = 1.1, ToValue = 50, ZoneName = EnumApple_Ok_NG.NG });
 
                 var appleSettings = new AppleSettingsModel()
                 {
@@ -613,22 +613,22 @@ namespace GiamSat.Scada
                 #region ZONE
                 foreach (var item in _model.ArrowSettings?.Zones)
                 {
-                    if (item.ZonName == EnumArrowZoneName.V1)
+                    if (item.ZoneName == EnumArrowZoneName.V1)
                     {
                         _txtFromV1.Text = item.FromValue.ToString();
                         _txtToV1.Text = item.ToValue.ToString();
                     }
-                    else if (item.ZonName == EnumArrowZoneName.V3)
+                    else if (item.ZoneName == EnumArrowZoneName.V3)
                     {
                         _txtFromV3.Text = item.FromValue.ToString();
                         _txtToV3.Text = item.ToValue.ToString();
                     }
-                    else if (item.ZonName == EnumArrowZoneName.V6)
+                    else if (item.ZoneName == EnumArrowZoneName.V6)
                     {
                         _txtFromV6.Text = item.FromValue.ToString();
                         _txtToV6.Text = item.ToValue.ToString();
                     }
-                    else if (item.ZonName == EnumArrowZoneName.V9)
+                    else if (item.ZoneName == EnumArrowZoneName.V9)
                     {
                         _txtFromV9.Text = item.FromValue.ToString();
                         _txtToV9.Text = item.ToValue.ToString();
