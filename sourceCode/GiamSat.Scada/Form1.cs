@@ -35,6 +35,11 @@ namespace GiamSat.Scada
         string _fileName;
         string _filePath;
 
+        private double _valueSensor1Old = 0, _valueSensor2Old = 0, _valueSensor3Old = 0;
+        private double _valueSensor1 = 0, _valueSensor2 = 0, _valueSensor3 = 0;
+
+        private bool _newTransaction = false;//biến để check mỗi lần giá trị đo từ 0 thay đổi, thì kích hoặt đo.
+
         public Form1()
         {
             InitializeComponent();
@@ -58,6 +63,10 @@ namespace GiamSat.Scada
             // Read the JSON file
             string jsonContent = File.ReadAllText(_filePath);
             _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent);
+
+            _labUnitS1.Text = _configValue.Unit;
+            _labUnitS2.Text = _configValue.Unit;
+            _labUnitS3.Text = _configValue.Unit;
             #endregion
 
             #region Khởi tạo easy drirver connector
@@ -100,8 +109,22 @@ namespace GiamSat.Scada
                     // Read the JSON file
                     string jsonContent1 = File.ReadAllText(_filePath);
                     _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent1);
+
+                    _labUnitS1.Text = _configValue.Unit;
+                    _labUnitS2.Text = _configValue.Unit;
+                    _labUnitS3.Text = _configValue.Unit;
                 }
             };
+
+            //reset these control results.
+            GlobalVariable.InvokeIfRequired(this, () =>
+            {
+                _labArrowZone.Text = _labArrowResult.Text = _labAppleResult.Text = null;
+                _labArrowZone.BackColor = _labArrowResult.BackColor = _labAppleResult.BackColor = Color.White;
+
+                _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
+                _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
+            });
 
             Load += Form1_Load;
             FormClosing += Form1_FormClosing;
@@ -182,6 +205,35 @@ namespace GiamSat.Scada
             {
                 t.Enabled = false;
                 GlobalVariable.InvokeIfRequired(this, () => { _labTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); });
+
+                #region Kiểm tra
+                if (_newTransaction)
+                {
+                    if (_formActive == "APPLE")
+                    {
+                        AppleCheck();
+                    }
+                    else
+                    {
+                        ArrowCheck();
+                    }
+
+                    //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
+                    if (_valueSensor1 == 0 && _valueSensor2 == 0 && _valueSensor3 == 0)
+                    {
+                        _newTransaction = false;
+
+                        GlobalVariable.InvokeIfRequired(this, () =>
+                        {
+                            _labArrowZone.Text = _labArrowResult.Text = _labAppleResult.Text = null;
+                            _labArrowZone.BackColor = _labArrowResult.BackColor = _labAppleResult.BackColor = Color.White;
+
+                            _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
+                            _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
+                        });
+                    }
+                }
+                #endregion
             }
             catch (Exception ex) { Log.Error(ex, "From _timer_Tick"); }
             finally
@@ -197,10 +249,18 @@ namespace GiamSat.Scada
             {
                 //easyDriverConnector1.GetTag($"{item.Path}/Temperature").QualityChanged += Temperature_QualityChanged;
                 _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_1").ValueChanged += SENSOR_1_ValueChanged;
+                _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_2").ValueChanged += SENSOR_2_ValueChanged;
+                _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_3").ValueChanged += SENSOR_3_ValueChanged;
 
                 SENSOR_1_ValueChanged(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_1")
                     , new TagValueChangedEventArgs(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_1")
                     , "", _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_1").Value));
+                SENSOR_2_ValueChanged(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_2")
+                   , new TagValueChangedEventArgs(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_2")
+                   , "", _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_2").Value));
+                SENSOR_3_ValueChanged(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_3")
+                   , new TagValueChangedEventArgs(_easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_3")
+                   , "", _easyDriverConnector.GetTag($"Local Station/Channel1/Device/SENSOR_3").Value));
             }
         }
 
@@ -212,21 +272,151 @@ namespace GiamSat.Scada
             {
                 var path = e.Tag.Parent.Path;
 
-                //foreach (var item in _displayRealtime)
-                //{
-                //    if (item.Path == path)
-                //    {
-                //        //Debug.WriteLine($"{path}/Tempperature: {e.NewValue}");
-                //        item.Temperature = double.TryParse(e.NewValue, out double value) ? Math.Round(value * GlobalVariable.ConfigSystem.Gain, 1) : item.Temperature;
+                var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
-                //        return;
-                //    }
-                //}
+                _valueSensor1 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+
+                GlobalVariable.InvokeIfRequired(this, () => { _labValueS1.Text = _valueSensor1.ToString(); });
+
+                //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
+                if (_valueSensor1 != 0) _newTransaction = true;
+            }
+            catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
+        }
+        private void SENSOR_2_ValueChanged(object sender, TagValueChangedEventArgs e)
+        {
+            try
+            {
+                var path = e.Tag.Parent.Path;
+
+                var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
+
+                _valueSensor2 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+
+                GlobalVariable.InvokeIfRequired(this, () => { _labValueS2.Text = _valueSensor2.ToString(); });
+
+                //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
+                if (_valueSensor2 != 0) _newTransaction = true;
+            }
+            catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
+        }
+        private void SENSOR_3_ValueChanged(object sender, TagValueChangedEventArgs e)
+        {
+            try
+            {
+                var path = e.Tag.Parent.Path;
+
+                var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
+
+                _valueSensor3 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+
+                GlobalVariable.InvokeIfRequired(this, () => { _labValueS3.Text = _valueSensor3.ToString(); });
+
+                //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
+                if (_valueSensor3 != 0) _newTransaction = true;
             }
             catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
         }
         #endregion
 
+        #endregion
+
+        #region Methods
+        private void AppleCheck()
+        {
+            var sensorCount = _configValue.AppleSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
+            double valueFinal = 0;
+            List<double> valueCompare = new List<double>();
+            EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
+
+            var sensors = _configValue.AppleSettings.Sensors.ToList();
+            foreach (var item in sensors)
+            {
+                if (item == EnumSensor.SENSOR_1)
+                    valueCompare.Add(_valueSensor1);
+                else if (item == EnumSensor.SENSOR_2)
+                    valueCompare.Add(_valueSensor2);
+                else
+                    valueCompare.Add(_valueSensor3);
+            }
+
+            //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
+            valueFinal = _configValue.AppleSettings.DataMax == true ? valueCompare.Max() : valueCompare.Min();
+
+            //kiểm tra
+            foreach (var item in _configValue.AppleSettings.Zones)
+            {
+                if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
+                {
+                    result = item.ZoneName;
+                    break;
+                }
+            }
+
+            GlobalVariable.InvokeIfRequired(this, () =>
+            {
+                _labAppleResult.Text = result.ToString();
+                _labAppleValueFinal.Text = valueFinal.ToString();
+
+                if (result == EnumApple_Ok_NG.OK)
+                {
+                    _labAppleResult.BackColor = Color.Green;
+                    _labAppleValueFinal.ForeColor = Color.Green;
+                }
+                else
+                {
+                    _labAppleResult.BackColor = Color.Red;
+                    _labAppleValueFinal.ForeColor = Color.Red;
+                }
+            });
+        }
+
+        private void ArrowCheck()
+        {
+            //var sensorCount = _configValue.AppleSettings.Sensors.Count;//số luongj sensor được chọn để kiểm tra.
+            //double valueFinal = 0;
+
+            //EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
+
+            //if (sensorCount == 1)
+            //{
+            //    var s = _configValue.AppleSettings.Sensors.FirstOrDefault();
+
+            //    switch (s)
+            //    {
+            //        case EnumSensor.SENSOR_1:
+            //            valueFinal = _valueSensor1;
+            //            break;
+            //        case EnumSensor.SENSOR_2:
+            //            valueFinal = _valueSensor2;
+            //            break;
+            //        case EnumSensor.SENSOR_3:
+            //            valueFinal = _valueSensor3;
+            //            break;
+            //        default:
+            //            break;
+            //    }
+
+            //    foreach (var item in _configValue.AppleSettings.Zones)
+            //    {
+            //        if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
+            //        {
+            //            result = item.ZoneName;
+            //            break;
+            //        }
+            //    }
+
+            //    GlobalVariable.InvokeIfRequired(this, () =>
+            //    {
+            //        _labAppleResult.Text = result.ToString();
+
+            //        if (result == EnumApple_Ok_NG.OK)
+            //            _labAppleResult.BackColor = Color.Green;
+            //        else
+            //            _labAppleResult.BackColor = Color.Red;
+            //    });
+            //}
+        }
         #endregion
     }
 }

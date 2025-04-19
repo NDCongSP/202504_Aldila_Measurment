@@ -46,13 +46,16 @@ namespace GiamSat.Scada
             this._labValueS3 = new System.Windows.Forms.Label();
             this._labUnitS3 = new System.Windows.Forms.Label();
             this._groupBoxArrowZone = new System.Windows.Forms.GroupBox();
-            this._labZone = new System.Windows.Forms.Label();
+            this._labArrowZone = new System.Windows.Forms.Label();
             this._groupBoxArrowResult = new System.Windows.Forms.GroupBox();
             this._labArrowResult = new System.Windows.Forms.Label();
             this._groupBoxApple = new System.Windows.Forms.GroupBox();
             this._labAppleResult = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this._labAppleValueFinal = new System.Windows.Forms.Label();
+            this._labArrowValueFinal = new System.Windows.Forms.Label();
+            this._labArrowValueHead = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -234,7 +237,8 @@ namespace GiamSat.Scada
             // 
             // _groupBoxArrowZone
             // 
-            this._groupBoxArrowZone.Controls.Add(this._labZone);
+            this._groupBoxArrowZone.Controls.Add(this._labArrowValueFinal);
+            this._groupBoxArrowZone.Controls.Add(this._labArrowZone);
             this._groupBoxArrowZone.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold);
             this._groupBoxArrowZone.Location = new System.Drawing.Point(22, 38);
             this._groupBoxArrowZone.Name = "_groupBoxArrowZone";
@@ -243,20 +247,21 @@ namespace GiamSat.Scada
             this._groupBoxArrowZone.TabStop = false;
             this._groupBoxArrowZone.Text = "ZONE";
             // 
-            // _labZone
+            // _labArrowZone
             // 
-            this._labZone.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this._labZone.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this._labZone.ForeColor = System.Drawing.Color.Black;
-            this._labZone.Location = new System.Drawing.Point(19, 34);
-            this._labZone.Name = "_labZone";
-            this._labZone.Size = new System.Drawing.Size(275, 160);
-            this._labZone.TabIndex = 1;
-            this._labZone.Text = "VSS";
-            this._labZone.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this._labArrowZone.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._labArrowZone.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._labArrowZone.ForeColor = System.Drawing.Color.Black;
+            this._labArrowZone.Location = new System.Drawing.Point(19, 69);
+            this._labArrowZone.Name = "_labArrowZone";
+            this._labArrowZone.Size = new System.Drawing.Size(275, 125);
+            this._labArrowZone.TabIndex = 1;
+            this._labArrowZone.Text = "VSS";
+            this._labArrowZone.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // _groupBoxArrowResult
             // 
+            this._groupBoxArrowResult.Controls.Add(this._labArrowValueHead);
             this._groupBoxArrowResult.Controls.Add(this._labArrowResult);
             this._groupBoxArrowResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold);
             this._groupBoxArrowResult.Location = new System.Drawing.Point(703, 38);
@@ -271,15 +276,16 @@ namespace GiamSat.Scada
             this._labArrowResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._labArrowResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._labArrowResult.ForeColor = System.Drawing.Color.Black;
-            this._labArrowResult.Location = new System.Drawing.Point(19, 34);
+            this._labArrowResult.Location = new System.Drawing.Point(19, 69);
             this._labArrowResult.Name = "_labArrowResult";
-            this._labArrowResult.Size = new System.Drawing.Size(275, 160);
+            this._labArrowResult.Size = new System.Drawing.Size(275, 125);
             this._labArrowResult.TabIndex = 1;
             this._labArrowResult.Text = "OK";
             this._labArrowResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // _groupBoxApple
             // 
+            this._groupBoxApple.Controls.Add(this._labAppleValueFinal);
             this._groupBoxApple.Controls.Add(this._labAppleResult);
             this._groupBoxApple.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold);
             this._groupBoxApple.Location = new System.Drawing.Point(361, 38);
@@ -294,9 +300,9 @@ namespace GiamSat.Scada
             this._labAppleResult.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this._labAppleResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._labAppleResult.ForeColor = System.Drawing.Color.Black;
-            this._labAppleResult.Location = new System.Drawing.Point(19, 34);
+            this._labAppleResult.Location = new System.Drawing.Point(19, 69);
             this._labAppleResult.Name = "_labAppleResult";
-            this._labAppleResult.Size = new System.Drawing.Size(275, 160);
+            this._labAppleResult.Size = new System.Drawing.Size(275, 125);
             this._labAppleResult.TabIndex = 1;
             this._labAppleResult.Text = "OK";
             this._labAppleResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -328,6 +334,45 @@ namespace GiamSat.Scada
             this.groupBox5.TabIndex = 13;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "KẾT QUẢ ĐO";
+            // 
+            // _labAppleValueFinal
+            // 
+            this._labAppleValueFinal.BackColor = System.Drawing.SystemColors.Control;
+            this._labAppleValueFinal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._labAppleValueFinal.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._labAppleValueFinal.ForeColor = System.Drawing.Color.Red;
+            this._labAppleValueFinal.Location = new System.Drawing.Point(19, 34);
+            this._labAppleValueFinal.Name = "_labAppleValueFinal";
+            this._labAppleValueFinal.Size = new System.Drawing.Size(275, 35);
+            this._labAppleValueFinal.TabIndex = 2;
+            this._labAppleValueFinal.Text = "label1";
+            this._labAppleValueFinal.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _labArrowValueFinal
+            // 
+            this._labArrowValueFinal.BackColor = System.Drawing.SystemColors.Control;
+            this._labArrowValueFinal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._labArrowValueFinal.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._labArrowValueFinal.ForeColor = System.Drawing.Color.Red;
+            this._labArrowValueFinal.Location = new System.Drawing.Point(19, 34);
+            this._labArrowValueFinal.Name = "_labArrowValueFinal";
+            this._labArrowValueFinal.Size = new System.Drawing.Size(275, 35);
+            this._labArrowValueFinal.TabIndex = 3;
+            this._labArrowValueFinal.Text = "label2";
+            this._labArrowValueFinal.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // _labArrowValueHead
+            // 
+            this._labArrowValueHead.BackColor = System.Drawing.SystemColors.Control;
+            this._labArrowValueHead.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this._labArrowValueHead.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._labArrowValueHead.ForeColor = System.Drawing.Color.Red;
+            this._labArrowValueHead.Location = new System.Drawing.Point(19, 34);
+            this._labArrowValueHead.Name = "_labArrowValueHead";
+            this._labArrowValueHead.Size = new System.Drawing.Size(275, 35);
+            this._labArrowValueHead.TabIndex = 4;
+            this._labArrowValueHead.Text = "label3";
+            this._labArrowValueHead.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Form1
             // 
@@ -377,13 +422,16 @@ namespace GiamSat.Scada
         private System.Windows.Forms.Label _labValueS3;
         private System.Windows.Forms.Label _labUnitS3;
         private System.Windows.Forms.GroupBox _groupBoxArrowZone;
-        private System.Windows.Forms.Label _labZone;
+        private System.Windows.Forms.Label _labArrowZone;
         private System.Windows.Forms.GroupBox _groupBoxArrowResult;
         private System.Windows.Forms.Label _labArrowResult;
         private System.Windows.Forms.GroupBox _groupBoxApple;
         private System.Windows.Forms.Label _labAppleResult;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label _labArrowValueFinal;
+        private System.Windows.Forms.Label _labArrowValueHead;
+        private System.Windows.Forms.Label _labAppleValueFinal;
     }
 }
 

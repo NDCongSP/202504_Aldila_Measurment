@@ -58,7 +58,7 @@ namespace GiamSat.Scada
         /// <summary>
         /// tên của vùng.
         /// </summary>
-        public EnumArrowZoneName ZonName { get; set; }
+        public EnumArrowZoneName ZoneName { get; set; }
     }
 
     /// <summary>
