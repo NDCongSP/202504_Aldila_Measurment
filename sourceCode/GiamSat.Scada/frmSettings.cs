@@ -40,6 +40,14 @@ namespace GiamSat.Scada
                 }
             };
 
+            _btnChangePass.Click += (s, o) =>
+            {
+                using (var nf=new frmChangePass())
+                {
+                    nf.ShowDialog();
+                }
+            };
+
             #region Đăng ký các sự kiện của các controls để cập nhật các giá trị cài đặt mới.
             #region Arow    
             #region CHỌN SENSOR SO SÁNH PHÂN ZONE
