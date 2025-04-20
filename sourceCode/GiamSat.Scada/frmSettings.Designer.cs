@@ -82,6 +82,8 @@
             this._txtFromOK = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this._txtValueActive = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this._txtUnit = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this._txtOffset = new System.Windows.Forms.TextBox();
@@ -93,6 +95,7 @@
             this._txtDecimalNum = new System.Windows.Forms.TextBox();
             this._lab = new System.Windows.Forms.Label();
             this._btnSave = new System.Windows.Forms.Button();
+            this._checkBoxOnOffCheckHeadStraight = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -607,6 +610,9 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this._checkBoxOnOffCheckHeadStraight);
+            this.groupBox7.Controls.Add(this._txtValueActive);
+            this.groupBox7.Controls.Add(this.label14);
             this.groupBox7.Controls.Add(this._txtUnit);
             this.groupBox7.Controls.Add(this.label13);
             this.groupBox7.Controls.Add(this._txtOffset);
@@ -623,6 +629,22 @@
             this.groupBox7.TabIndex = 20;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "HỆ THỐNG";
+            // 
+            // _txtValueActive
+            // 
+            this._txtValueActive.Location = new System.Drawing.Point(623, 55);
+            this._txtValueActive.Name = "_txtValueActive";
+            this._txtValueActive.Size = new System.Drawing.Size(128, 20);
+            this._txtValueActive.TabIndex = 19;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(623, 35);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(126, 13);
+            this.label14.TabIndex = 18;
+            this.label14.Text = "GIÁ TRỊ KÍCH HOẠT ĐO";
             // 
             // _txtUnit
             // 
@@ -675,15 +697,15 @@
             // _txtTagPath
             // 
             this._txtTagPath.Enabled = false;
-            this._txtTagPath.Location = new System.Drawing.Point(18, 113);
+            this._txtTagPath.Location = new System.Drawing.Point(316, 114);
             this._txtTagPath.Name = "_txtTagPath";
-            this._txtTagPath.Size = new System.Drawing.Size(286, 20);
+            this._txtTagPath.Size = new System.Drawing.Size(433, 20);
             this._txtTagPath.TabIndex = 11;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(18, 97);
+            this.label10.Location = new System.Drawing.Point(316, 98);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(61, 13);
             this.label10.TabIndex = 10;
@@ -713,6 +735,16 @@
             this._btnSave.TabIndex = 21;
             this._btnSave.Text = "LƯU";
             this._btnSave.UseVisualStyleBackColor = true;
+            // 
+            // _checkBoxOnOffCheckHeadStraight
+            // 
+            this._checkBoxOnOffCheckHeadStraight.AutoSize = true;
+            this._checkBoxOnOffCheckHeadStraight.Location = new System.Drawing.Point(18, 116);
+            this._checkBoxOnOffCheckHeadStraight.Name = "_checkBoxOnOffCheckHeadStraight";
+            this._checkBoxOnOffCheckHeadStraight.Size = new System.Drawing.Size(194, 17);
+            this._checkBoxOnOffCheckHeadStraight.TabIndex = 5;
+            this._checkBoxOnOffCheckHeadStraight.Text = "BẬT/TẮT KIỂM TRA ĐẦU THẲNG";
+            this._checkBoxOnOffCheckHeadStraight.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -815,5 +847,8 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox _txtUnit;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox _txtValueActive;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.CheckBox _checkBoxOnOffCheckHeadStraight;
     }
 }

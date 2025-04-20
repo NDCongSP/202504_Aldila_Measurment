@@ -40,6 +40,8 @@ namespace GiamSat.Scada
 
         private bool _newTransaction = false;//biến để check mỗi lần giá trị đo từ 0 thay đổi, thì kích hoặt đo.
 
+        TagValueChangedEventArgs _tagS1, _tagS2, _tagS3;
+
         public Form1()
         {
             InitializeComponent();
@@ -113,6 +115,10 @@ namespace GiamSat.Scada
                     _labUnitS1.Text = _configValue.Unit;
                     _labUnitS2.Text = _configValue.Unit;
                     _labUnitS3.Text = _configValue.Unit;
+
+                    SENSOR_1_ValueChanged(null, _tagS1);
+                    SENSOR_2_ValueChanged(null, _tagS2);
+                    SENSOR_3_ValueChanged(null, _tagS3);
                 }
             };
 
@@ -169,6 +175,7 @@ namespace GiamSat.Scada
                 default:
                     return Color.White;
             }
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -219,7 +226,11 @@ namespace GiamSat.Scada
                     }
 
                     //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
-                    if (_valueSensor1 == 0 && _valueSensor2 == 0 && _valueSensor3 == 0)
+                    if ((_valueSensor1 == 0 && _valueSensor2 == 0 && _valueSensor3 == 0)
+                        || _valueSensor1 >= _configValue.ValueActive
+                        || _valueSensor2 >= _configValue.ValueActive
+                        || _valueSensor3 >= _configValue.ValueActive
+                        )
                     {
                         _newTransaction = false;
 
@@ -270,7 +281,8 @@ namespace GiamSat.Scada
         {
             try
             {
-                var path = e.Tag.Parent.Path;
+                _tagS1 = e;
+                var path = e?.Tag.Parent.Path;
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
@@ -279,7 +291,12 @@ namespace GiamSat.Scada
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS1.Text = _valueSensor1.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
-                if (_valueSensor1 != 0) _newTransaction = true;
+                //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
+                if (_valueSensor1 != 0 && _valueSensor1 < _configValue.ValueActive
+                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                {
+                    _newTransaction = true;
+                }
             }
             catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
         }
@@ -287,6 +304,7 @@ namespace GiamSat.Scada
         {
             try
             {
+                _tagS2 = e;
                 var path = e.Tag.Parent.Path;
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
@@ -296,7 +314,12 @@ namespace GiamSat.Scada
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS2.Text = _valueSensor2.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
-                if (_valueSensor2 != 0) _newTransaction = true;
+                //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
+                if (_valueSensor2 != 0 && _valueSensor1 < _configValue.ValueActive
+                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                {
+                    _newTransaction = true;
+                }
             }
             catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
         }
@@ -304,6 +327,7 @@ namespace GiamSat.Scada
         {
             try
             {
+                _tagS3 = e;
                 var path = e.Tag.Parent.Path;
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
@@ -313,7 +337,12 @@ namespace GiamSat.Scada
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS3.Text = _valueSensor3.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
-                if (_valueSensor3 != 0) _newTransaction = true;
+                //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
+                if (_valueSensor3 != 0 && _valueSensor1 < _configValue.ValueActive
+                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                {
+                    _newTransaction = true;
+                }
             }
             catch (Exception ex) { Log.Error(ex, $"From TagValueChanged {e.Tag.Path}"); }
         }
@@ -395,30 +424,61 @@ namespace GiamSat.Scada
             double compareValue = 0;//kiểm tra OK/NG
             string compareDisplay = string.Empty;
 
-            //tính giá trị phân ZONE.
+            //lấy các giá trị của cảm biến được chọn phân ZONE.
             var sensors = _configValue.ArrowSettings.Sensors.ToList();
-            if (sensorCount == 3)
+            foreach (var item in sensors)
             {
-                foreach (var item in sensors)
+                if (item == EnumSensor.SENSOR_1)
+                    valueZoneList.Add(_valueSensor1);
+                else if (item == EnumSensor.SENSOR_2)
+                    valueZoneList.Add(_valueSensor2);
+                else
+                    valueZoneList.Add(_valueSensor3);
+
+                if (string.IsNullOrEmpty(sensorView))
                 {
-                    if (item == EnumSensor.SENSOR_1)
-                        valueZoneList.Add(_valueSensor1);
-                    else if (item == EnumSensor.SENSOR_2)
-                        valueZoneList.Add(_valueSensor2);
-                    else
-                        valueZoneList.Add(_valueSensor3);
+                    sensorView = item.ToString();
+                }
+                else
+                    sensorView = string.Join(", ", sensorView, item.ToString());
+            }
+            //kiểm tra xem phần chọn các sensor phân zone theo điều kiện, nếu thỏa mãn thì add thêm vào.
+            var sensorsConditons = _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.Sensors.ToList();
+            foreach (var item in sensorsConditons)
+            {
+                if (item == EnumSensor.SENSOR_1 && _valueSensor1 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                {
+                    valueZoneList.Add(_valueSensor1);
 
                     if (string.IsNullOrEmpty(sensorView))
                     {
                         sensorView = item.ToString();
                     }
                     else
-                        sensorView=string.Join(", ",sensorView,item.ToString());
+                        sensorView = string.Join(", ", sensorView, item.ToString());
                 }
-            }
-            else
-            {
+                else if (item == EnumSensor.SENSOR_2 && _valueSensor2 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                {
+                    valueZoneList.Add(_valueSensor2);
 
+                    if (string.IsNullOrEmpty(sensorView))
+                    {
+                        sensorView = item.ToString();
+                    }
+                    else
+                        sensorView = string.Join(", ", sensorView, item.ToString());
+                }
+                else if (item == EnumSensor.SENSOR_3 && _valueSensor3 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                {
+                    valueZoneList.Add(_valueSensor3);
+
+                    if (string.IsNullOrEmpty(sensorView))
+                    {
+                        sensorView = item.ToString();
+                    }
+                    else
+                        sensorView = string.Join(", ", sensorView, item.ToString());
+                }
             }
 
             //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
@@ -450,7 +510,7 @@ namespace GiamSat.Scada
             {
                 //ZONE
                 _labArrowZone.Text = zone.ToString();
-                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
+                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị đặt: {_configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
 
                 if (zone == EnumArrowZoneName.V1)
                     _labArrowZone.BackColor = Color.White;
@@ -464,18 +524,27 @@ namespace GiamSat.Scada
                     _labArrowZone.BackColor = Color.Aqua;
 
                 //OK/NG
-                _labArrowValueHead.Text = $"+ {compareDisplay}\n+ Giá trị đặt: {_configValue.ArrowSettings.CompareValue}\n+ Giá trị tính toán: {compareValue.ToString()}";
-                if (compareValue >= _configValue.ArrowSettings.CompareValue)
+                if (_configValue.ActiveCheckHeadStraight)
                 {
-                    _labArrowResultHead.BackColor = Color.Green;
-                    _labArrowResultHead.Text = "OK";
-                    _labArrowValueHead.ForeColor = Color.Green;
+                    _labArrowValueHead.Text = $"+ {compareDisplay}\n+ Giá trị đặt: {_configValue.ArrowSettings.CompareValue}\n+ Giá trị tính toán: {compareValue.ToString()}";
+                    if (compareValue >= _configValue.ArrowSettings.CompareValue)
+                    {
+                        _labArrowResultHead.BackColor = Color.Green;
+                        _labArrowResultHead.Text = "OK";
+                        _labArrowValueHead.ForeColor = Color.Green;
+                    }
+                    else
+                    {
+                        _labArrowResultHead.BackColor = Color.Red;
+                        _labArrowResultHead.Text = "NG";
+                        _labArrowValueHead.ForeColor = Color.Red;
+                    }
                 }
                 else
                 {
-                    _labArrowResultHead.BackColor = Color.Red;
-                    _labArrowResultHead.Text = "NG";
-                    _labArrowValueHead.ForeColor = Color.Red;
+                    _labArrowResultHead.BackColor = Color.White;
+                    _labArrowResultHead.Text = _labArrowValueHead.Text = string.Empty;
+                    _labArrowValueHead.ForeColor = Color.Black;
                 }
             });
         }
