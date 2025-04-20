@@ -119,8 +119,8 @@ namespace GiamSat.Scada
             //reset these control results.
             GlobalVariable.InvokeIfRequired(this, () =>
             {
-                _labArrowZone.Text = _labArrowResult.Text = _labAppleResult.Text = null;
-                _labArrowZone.BackColor = _labArrowResult.BackColor = _labAppleResult.BackColor = Color.White;
+                _labArrowZone.Text = _labArrowResultHead.Text = _labAppleResult.Text = null;
+                _labArrowZone.BackColor = _labArrowResultHead.BackColor = _labAppleResult.BackColor = Color.White;
 
                 _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
                 _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
@@ -225,8 +225,8 @@ namespace GiamSat.Scada
 
                         GlobalVariable.InvokeIfRequired(this, () =>
                         {
-                            _labArrowZone.Text = _labArrowResult.Text = _labAppleResult.Text = null;
-                            _labArrowZone.BackColor = _labArrowResult.BackColor = _labAppleResult.BackColor = Color.White;
+                            _labArrowZone.Text = _labArrowResultHead.Text = _labAppleResult.Text = null;
+                            _labArrowZone.BackColor = _labArrowResultHead.BackColor = _labAppleResult.BackColor = Color.White;
 
                             _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
                             _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
@@ -324,24 +324,34 @@ namespace GiamSat.Scada
         #region Methods
         private void AppleCheck()
         {
+            string sensorView = string.Empty;
+            string dataMax = _configValue.AppleSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
             var sensorCount = _configValue.AppleSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
             double valueFinal = 0;
-            List<double> valueCompare = new List<double>();
+            List<double> valueZoneList = new List<double>();
             EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
+            string limit = string.Empty;
 
             var sensors = _configValue.AppleSettings.Sensors.ToList();
             foreach (var item in sensors)
             {
                 if (item == EnumSensor.SENSOR_1)
-                    valueCompare.Add(_valueSensor1);
+                    valueZoneList.Add(_valueSensor1);
                 else if (item == EnumSensor.SENSOR_2)
-                    valueCompare.Add(_valueSensor2);
+                    valueZoneList.Add(_valueSensor2);
                 else
-                    valueCompare.Add(_valueSensor3);
+                    valueZoneList.Add(_valueSensor3);
+
+                if (string.IsNullOrEmpty(sensorView))
+                {
+                    sensorView = item.ToString();
+                }
+                else
+                    sensorView = string.Join(", ", sensorView, item.ToString());
             }
 
             //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
-            valueFinal = _configValue.AppleSettings.DataMax == true ? valueCompare.Max() : valueCompare.Min();
+            valueFinal = _configValue.AppleSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
 
             //kiểm tra
             foreach (var item in _configValue.AppleSettings.Zones)
@@ -349,6 +359,7 @@ namespace GiamSat.Scada
                 if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
                 {
                     result = item.ZoneName;
+                    limit = $"{item.ZoneName.ToString()} từ {item.FromValue} đến {item.ToValue}";
                     break;
                 }
             }
@@ -356,7 +367,7 @@ namespace GiamSat.Scada
             GlobalVariable.InvokeIfRequired(this, () =>
             {
                 _labAppleResult.Text = result.ToString();
-                _labAppleValueFinal.Text = valueFinal.ToString();
+                _labAppleValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ {limit}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
 
                 if (result == EnumApple_Ok_NG.OK)
                 {
@@ -373,49 +384,100 @@ namespace GiamSat.Scada
 
         private void ArrowCheck()
         {
-            //var sensorCount = _configValue.AppleSettings.Sensors.Count;//số luongj sensor được chọn để kiểm tra.
-            //double valueFinal = 0;
+            string sensorView = string.Empty;
+            string dataMax = _configValue.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
 
-            //EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
+            var sensorCount = _configValue.ArrowSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
+            double valueFinal = 0;//giá trị cuối cùng dùng để phân Zone.
+            List<double> valueZoneList = new List<double>();//list chứa các giá trị của các sensor được chọn để phân zone.
+            EnumArrowZoneName zone = EnumArrowZoneName.V1;//tên zone cuối cùng được xác định.
 
-            //if (sensorCount == 1)
-            //{
-            //    var s = _configValue.AppleSettings.Sensors.FirstOrDefault();
+            double compareValue = 0;//kiểm tra OK/NG
+            string compareDisplay = string.Empty;
 
-            //    switch (s)
-            //    {
-            //        case EnumSensor.SENSOR_1:
-            //            valueFinal = _valueSensor1;
-            //            break;
-            //        case EnumSensor.SENSOR_2:
-            //            valueFinal = _valueSensor2;
-            //            break;
-            //        case EnumSensor.SENSOR_3:
-            //            valueFinal = _valueSensor3;
-            //            break;
-            //        default:
-            //            break;
-            //    }
+            //tính giá trị phân ZONE.
+            var sensors = _configValue.ArrowSettings.Sensors.ToList();
+            if (sensorCount == 3)
+            {
+                foreach (var item in sensors)
+                {
+                    if (item == EnumSensor.SENSOR_1)
+                        valueZoneList.Add(_valueSensor1);
+                    else if (item == EnumSensor.SENSOR_2)
+                        valueZoneList.Add(_valueSensor2);
+                    else
+                        valueZoneList.Add(_valueSensor3);
 
-            //    foreach (var item in _configValue.AppleSettings.Zones)
-            //    {
-            //        if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
-            //        {
-            //            result = item.ZoneName;
-            //            break;
-            //        }
-            //    }
+                    if (string.IsNullOrEmpty(sensorView))
+                    {
+                        sensorView = item.ToString();
+                    }
+                    else
+                        sensorView=string.Join(", ",sensorView,item.ToString());
+                }
+            }
+            else
+            {
 
-            //    GlobalVariable.InvokeIfRequired(this, () =>
-            //    {
-            //        _labAppleResult.Text = result.ToString();
+            }
 
-            //        if (result == EnumApple_Ok_NG.OK)
-            //            _labAppleResult.BackColor = Color.Green;
-            //        else
-            //            _labAppleResult.BackColor = Color.Red;
-            //    });
-            //}
+            //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
+            valueFinal = _configValue.ArrowSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
+
+            //kiểm tra
+            foreach (var item in _configValue.ArrowSettings.Zones)
+            {
+                if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
+                {
+                    zone = item.ZoneName;
+                    break;
+                }
+            }
+
+            //tính giá trị OK/NG.
+            if (_configValue.ArrowSettings.S3_S1OrS1_S3)
+            {
+                compareValue = _valueSensor3 - _valueSensor1;
+                compareDisplay = "Sensor 3 - Sensor 1";
+            }
+            else
+            {
+                compareValue = _valueSensor1 - _valueSensor3;
+                compareDisplay = "Sensor 1 - Sensor 3";
+            }
+
+            GlobalVariable.InvokeIfRequired(this, () =>
+            {
+                //ZONE
+                _labArrowZone.Text = zone.ToString();
+                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
+
+                if (zone == EnumArrowZoneName.V1)
+                    _labArrowZone.BackColor = Color.White;
+                else if (zone == EnumArrowZoneName.V3)
+                    _labArrowZone.BackColor = Color.Yellow;
+                else if (zone == EnumArrowZoneName.V6)
+                    _labArrowZone.BackColor = Color.Red;
+                else if (zone == EnumArrowZoneName.V9)
+                    _labArrowZone.BackColor = Color.Green;
+                else if (zone == EnumArrowZoneName.VSS)
+                    _labArrowZone.BackColor = Color.Aqua;
+
+                //OK/NG
+                _labArrowValueHead.Text = $"+ {compareDisplay}\n+ Giá trị đặt: {_configValue.ArrowSettings.CompareValue}\n+ Giá trị tính toán: {compareValue.ToString()}";
+                if (compareValue >= _configValue.ArrowSettings.CompareValue)
+                {
+                    _labArrowResultHead.BackColor = Color.Green;
+                    _labArrowResultHead.Text = "OK";
+                    _labArrowValueHead.ForeColor = Color.Green;
+                }
+                else
+                {
+                    _labArrowResultHead.BackColor = Color.Red;
+                    _labArrowResultHead.Text = "NG";
+                    _labArrowValueHead.ForeColor = Color.Red;
+                }
+            });
         }
         #endregion
     }

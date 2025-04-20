@@ -82,6 +82,8 @@
             this._txtFromOK = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this._txtUnit = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this._txtOffset = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this._txtGain = new System.Windows.Forms.TextBox();
@@ -91,8 +93,6 @@
             this._txtDecimalNum = new System.Windows.Forms.TextBox();
             this._lab = new System.Windows.Forms.Label();
             this._btnSave = new System.Windows.Forms.Button();
-            this._txtUnit = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -624,6 +624,22 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "HỆ THỐNG";
             // 
+            // _txtUnit
+            // 
+            this._txtUnit.Location = new System.Drawing.Point(467, 55);
+            this._txtUnit.Name = "_txtUnit";
+            this._txtUnit.Size = new System.Drawing.Size(128, 20);
+            this._txtUnit.TabIndex = 17;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(467, 35);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(44, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "ĐƠN VỊ";
+            // 
             // _txtOffset
             // 
             this._txtOffset.Location = new System.Drawing.Point(316, 55);
@@ -698,24 +714,9 @@
             this._btnSave.Text = "LƯU";
             this._btnSave.UseVisualStyleBackColor = true;
             // 
-            // _txtUnit
-            // 
-            this._txtUnit.Location = new System.Drawing.Point(467, 55);
-            this._txtUnit.Name = "_txtUnit";
-            this._txtUnit.Size = new System.Drawing.Size(128, 20);
-            this._txtUnit.TabIndex = 17;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(467, 35);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(44, 13);
-            this.label13.TabIndex = 16;
-            this.label13.Text = "ĐƠN VỊ";
-            // 
             // frmSettings
             // 
+            this.AcceptButton = this._btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 793);

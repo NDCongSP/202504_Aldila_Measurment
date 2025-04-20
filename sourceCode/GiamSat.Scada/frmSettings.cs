@@ -31,6 +31,8 @@ namespace GiamSat.Scada
                     string defaultJson = JsonConvert.SerializeObject(_model, Formatting.Indented);
                     File.WriteAllText(_filePath, defaultJson);
                     MessageBox.Show("LƯU CÀI ĐẶT THÀNH CÔNG.");
+
+                    this.Close();
                 }
                 catch (Exception ex)
                 {
@@ -474,6 +476,13 @@ namespace GiamSat.Scada
             #endregion
 
             Load += FrmSettings_Load;
+
+            this.KeyDown += (s, o) => {
+                if (o.KeyCode==Keys.Escape)
+                {
+                    this.Close();
+                }
+            };
         }
 
         private void FrmSettings_Load(object sender, EventArgs e)
