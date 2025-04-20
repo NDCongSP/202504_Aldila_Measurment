@@ -42,9 +42,25 @@ namespace GiamSat.Scada
 
         TagValueChangedEventArgs _tagS1, _tagS2, _tagS3;
 
+        List<int> _asciiCodeList=new List<int>();
+
         public Form1()
         {
             InitializeComponent();
+
+            // Example ASCII codes (separated by spaces)
+            string asciiInput = "72 101 108 108 111 32 87 111 114 108 100";
+
+            foreach (var item in asciiInput.Split(' '))
+            {
+                if (int.TryParse(item, out int code))
+                {
+                    _asciiCodeList.Add(code);
+                }
+            }
+
+            // Convert ASCII to string
+            var re=ConvertASCIIToString(_asciiCodeList);
 
             #region Đọc file cấu hình
             // Automatically use the same directory as the executable
@@ -547,6 +563,18 @@ namespace GiamSat.Scada
                     _labArrowValueHead.ForeColor = Color.Black;
                 }
             });
+        }
+
+        private string ConvertASCIIToString(List<int> ascii)
+        {
+            // Convert ASCII to string
+            string result = new string(
+                ascii
+                    .Select(code => (char)code)
+                    .ToArray()
+            );
+
+            return result;
         }
         #endregion
     }
