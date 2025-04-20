@@ -450,6 +450,7 @@ namespace GiamSat.Scada
             #endregion
             #endregion
 
+            #region Systems
             _txtDecimalNum.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
@@ -473,12 +474,27 @@ namespace GiamSat.Scada
                 TextBox t = (TextBox)s;
                 _model.Unit = t.Text;
             };
+
+            _txtValueActive.TextChanged += (s, o) =>
+            {
+                TextBox t = (TextBox)s;
+                _model.ValueActive = double.TryParse(t.Text, out double value) ? value : 0;
+            };
+
+            _checkBoxOnOffCheckHeadStraight.CheckedChanged += (s, o) =>
+            {
+                CheckBox ck = (CheckBox)s;
+
+                _model.ActiveCheckHeadStraight = ck.Checked;
+            };
+            #endregion
             #endregion
 
             Load += FrmSettings_Load;
 
-            this.KeyDown += (s, o) => {
-                if (o.KeyCode==Keys.Escape)
+            this.KeyDown += (s, o) =>
+            {
+                if (o.KeyCode == Keys.Escape)
                 {
                     this.Close();
                 }
@@ -531,6 +547,8 @@ namespace GiamSat.Scada
                     Gain = 1,
                     Offset = 0,
                     Unit = "mil",
+                    ValueActive = 600,
+                    ActiveCheckHeadStraight = true,
                     ArrowSettings = arrowSettings,
                     AppleSettings = appleSettings
                 };
@@ -556,6 +574,8 @@ namespace GiamSat.Scada
                 _txtUnit.Text = _model.Unit;
                 _txtGain.Text = _model.Gain.ToString();
                 _txtOffset.Text = _model.Offset.ToString();
+                _txtValueActive.Text = _model.ValueActive.ToString();
+                _checkBoxOnOffCheckHeadStraight.Checked = _model.ActiveCheckHeadStraight;
 
                 #region Apple
                 var sensorsAppleSensors = _model.AppleSettings?.Sensors?.ToList();
