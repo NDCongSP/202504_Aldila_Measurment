@@ -82,6 +82,7 @@
             this._txtFromOK = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this._checkBoxOnOffCheckHeadStraight = new System.Windows.Forms.CheckBox();
             this._txtValueActive = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this._txtUnit = new System.Windows.Forms.TextBox();
@@ -95,7 +96,7 @@
             this._txtDecimalNum = new System.Windows.Forms.TextBox();
             this._lab = new System.Windows.Forms.Label();
             this._btnSave = new System.Windows.Forms.Button();
-            this._checkBoxOnOffCheckHeadStraight = new System.Windows.Forms.CheckBox();
+            this._btnChangePass = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -630,6 +631,16 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "HỆ THỐNG";
             // 
+            // _checkBoxOnOffCheckHeadStraight
+            // 
+            this._checkBoxOnOffCheckHeadStraight.AutoSize = true;
+            this._checkBoxOnOffCheckHeadStraight.Location = new System.Drawing.Point(18, 116);
+            this._checkBoxOnOffCheckHeadStraight.Name = "_checkBoxOnOffCheckHeadStraight";
+            this._checkBoxOnOffCheckHeadStraight.Size = new System.Drawing.Size(194, 17);
+            this._checkBoxOnOffCheckHeadStraight.TabIndex = 5;
+            this._checkBoxOnOffCheckHeadStraight.Text = "BẬT/TẮT KIỂM TRA ĐẦU THẲNG";
+            this._checkBoxOnOffCheckHeadStraight.UseVisualStyleBackColor = true;
+            // 
             // _txtValueActive
             // 
             this._txtValueActive.Location = new System.Drawing.Point(623, 55);
@@ -736,15 +747,14 @@
             this._btnSave.Text = "LƯU";
             this._btnSave.UseVisualStyleBackColor = true;
             // 
-            // _checkBoxOnOffCheckHeadStraight
+            // _btnChangePass
             // 
-            this._checkBoxOnOffCheckHeadStraight.AutoSize = true;
-            this._checkBoxOnOffCheckHeadStraight.Location = new System.Drawing.Point(18, 116);
-            this._checkBoxOnOffCheckHeadStraight.Name = "_checkBoxOnOffCheckHeadStraight";
-            this._checkBoxOnOffCheckHeadStraight.Size = new System.Drawing.Size(194, 17);
-            this._checkBoxOnOffCheckHeadStraight.TabIndex = 5;
-            this._checkBoxOnOffCheckHeadStraight.Text = "BẬT/TẮT KIỂM TRA ĐẦU THẲNG";
-            this._checkBoxOnOffCheckHeadStraight.UseVisualStyleBackColor = true;
+            this._btnChangePass.Location = new System.Drawing.Point(12, 758);
+            this._btnChangePass.Name = "_btnChangePass";
+            this._btnChangePass.Size = new System.Drawing.Size(158, 23);
+            this._btnChangePass.TabIndex = 22;
+            this._btnChangePass.Text = "ĐỔI MẬT KHẨU";
+            this._btnChangePass.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -752,6 +762,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 793);
+            this.Controls.Add(this._btnChangePass);
             this.Controls.Add(this._btnSave);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
@@ -850,5 +861,6 @@
         private System.Windows.Forms.TextBox _txtValueActive;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.CheckBox _checkBoxOnOffCheckHeadStraight;
+        private System.Windows.Forms.Button _btnChangePass;
     }
 }

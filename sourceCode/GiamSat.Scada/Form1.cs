@@ -42,7 +42,7 @@ namespace GiamSat.Scada
 
         TagValueChangedEventArgs _tagS1, _tagS2, _tagS3;
 
-        List<int> _asciiCodeList=new List<int>();
+        List<int> _asciiCodeList = new List<int>();
 
         public Form1()
         {
@@ -60,7 +60,7 @@ namespace GiamSat.Scada
             }
 
             // Convert ASCII to string
-            var re=ConvertASCIIToString(_asciiCodeList);
+            var re = ConvertASCIIToString(_asciiCodeList);
 
             #region Đọc file cấu hình
             // Automatically use the same directory as the executable
@@ -120,21 +120,29 @@ namespace GiamSat.Scada
 
             _btnSettings.Click += (s, o) =>
             {
-                using (var nf = new frmSettings())
+                using (var nL=new frmLogin())
                 {
-                    nf.ShowDialog();
+                    nL.ShowDialog();
 
-                    // Read the JSON file
-                    string jsonContent1 = File.ReadAllText(_filePath);
-                    _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent1);
+                    if (nL.DialogResult == DialogResult.OK)
+                    {
+                        using (var nf = new frmSettings())
+                        {
+                            nf.ShowDialog();
 
-                    _labUnitS1.Text = _configValue.Unit;
-                    _labUnitS2.Text = _configValue.Unit;
-                    _labUnitS3.Text = _configValue.Unit;
+                            // Read the JSON file
+                            string jsonContent1 = File.ReadAllText(_filePath);
+                            _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent1);
 
-                    SENSOR_1_ValueChanged(null, _tagS1);
-                    SENSOR_2_ValueChanged(null, _tagS2);
-                    SENSOR_3_ValueChanged(null, _tagS3);
+                            _labUnitS1.Text = _configValue.Unit;
+                            _labUnitS2.Text = _configValue.Unit;
+                            _labUnitS3.Text = _configValue.Unit;
+
+                            SENSOR_1_ValueChanged(null, _tagS1);
+                            SENSOR_2_ValueChanged(null, _tagS2);
+                            SENSOR_3_ValueChanged(null, _tagS3);
+                        }
+                    }
                 }
             };
 
@@ -431,6 +439,7 @@ namespace GiamSat.Scada
         {
             string sensorView = string.Empty;
             string dataMax = _configValue.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
+            string zoneLimit = string.Empty;
 
             var sensorCount = _configValue.ArrowSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
             double valueFinal = 0;//giá trị cuối cùng dùng để phân Zone.
@@ -506,6 +515,7 @@ namespace GiamSat.Scada
                 if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
                 {
                     zone = item.ZoneName;
+                    zoneLimit = $"{zone.ToString()}: Từ {item.FromValue} đến {item.ToValue}";
                     break;
                 }
             }
@@ -513,12 +523,12 @@ namespace GiamSat.Scada
             //tính giá trị OK/NG.
             if (_configValue.ArrowSettings.S3_S1OrS1_S3)
             {
-                compareValue = _valueSensor3 - _valueSensor1;
+                compareValue = Math.Round(_valueSensor3 - _valueSensor1, _configValue.DecimalNum);
                 compareDisplay = "Sensor 3 - Sensor 1";
             }
             else
             {
-                compareValue = _valueSensor1 - _valueSensor3;
+                compareValue = Math.Round(_valueSensor1 - _valueSensor3, _configValue.DecimalNum);
                 compareDisplay = "Sensor 1 - Sensor 3";
             }
 
@@ -526,7 +536,7 @@ namespace GiamSat.Scada
             {
                 //ZONE
                 _labArrowZone.Text = zone.ToString();
-                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị đặt: {_configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
+                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị đặt: {_configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue}\n+ {zoneLimit}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
 
                 if (zone == EnumArrowZoneName.V1)
                     _labArrowZone.BackColor = Color.White;
