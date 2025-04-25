@@ -250,7 +250,7 @@ namespace GiamSat.Scada
                     }
 
                     //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
-                    if ((_valueSensor1 == 0 && _valueSensor2 == 0 && _valueSensor3 == 0)
+                    if ((_valueSensor1 <= 0 && _valueSensor2 <= 0 && _valueSensor3 <= 0)
                         || _valueSensor1 >= _configValue.ValueActive
                         || _valueSensor2 >= _configValue.ValueActive
                         || _valueSensor3 >= _configValue.ValueActive
@@ -311,12 +311,13 @@ namespace GiamSat.Scada
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
                 _valueSensor1 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+                _valueSensor1 = _valueSensor1 < 0 ? 0 : _valueSensor1;
 
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS1.Text = _valueSensor1.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor1 != 0 && _valueSensor1 < _configValue.ValueActive
+                if (_valueSensor1 > 0 && _valueSensor1 < _configValue.ValueActive
                     && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
                 {
                     _newTransaction = true;
@@ -334,12 +335,13 @@ namespace GiamSat.Scada
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
                 _valueSensor2 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+                _valueSensor2 = _valueSensor2 < 0 ? 0 : _valueSensor2;
 
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS2.Text = _valueSensor2.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor2 != 0 && _valueSensor1 < _configValue.ValueActive
+                if (_valueSensor2 > 0 && _valueSensor1 < _configValue.ValueActive
                     && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
                 {
                     _newTransaction = true;
@@ -358,11 +360,14 @@ namespace GiamSat.Scada
 
                 _valueSensor3 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
 
+                _valueSensor3 = _valueSensor3 < 0 ? 0 : _valueSensor3;
+
+
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS3.Text = _valueSensor3.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor3 != 0 && _valueSensor1 < _configValue.ValueActive
+                if (_valueSensor3 > 0 && _valueSensor1 < _configValue.ValueActive
                     && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
                 {
                     _newTransaction = true;
