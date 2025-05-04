@@ -56,6 +56,8 @@ namespace GiamSat.Scada
             this._labAppleResult = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this._cbSelectConfig = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -376,11 +378,31 @@ namespace GiamSat.Scada
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "KẾT QUẢ ĐO";
             // 
+            // _cbSelectConfig
+            // 
+            this._cbSelectConfig.FormattingEnabled = true;
+            this._cbSelectConfig.Location = new System.Drawing.Point(823, 17);
+            this._cbSelectConfig.Name = "_cbSelectConfig";
+            this._cbSelectConfig.Size = new System.Drawing.Size(226, 21);
+            this._cbSelectConfig.TabIndex = 14;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(636, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(159, 20);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Chọn cấu hình để đo:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 804);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this._cbSelectConfig);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this._btnSettings);
@@ -434,6 +456,8 @@ namespace GiamSat.Scada
         private System.Windows.Forms.Label _labArrowValueFinal;
         private System.Windows.Forms.Label _labArrowValueHead;
         private System.Windows.Forms.Label _labAppleValueFinal;
+        private System.Windows.Forms.ComboBox _cbSelectConfig;
+        private System.Windows.Forms.Label label1;
     }
 }
 

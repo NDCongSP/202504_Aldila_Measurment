@@ -31,7 +31,9 @@ namespace GiamSat.Scada
 
         private string _formActive = "ARROW";
 
-        private ConfigModel _configValue;
+        List<Configs> _configs = new List<Configs>();
+        Configs _configItem;
+
         string _fileName;
         string _filePath;
 
@@ -80,11 +82,34 @@ namespace GiamSat.Scada
 
             // Read the JSON file
             string jsonContent = File.ReadAllText(_filePath);
-            _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent);
+            _configs = JsonConvert.DeserializeObject<List<Configs>>(jsonContent);
 
-            _labUnitS1.Text = _configValue.Unit;
-            _labUnitS2.Text = _configValue.Unit;
-            _labUnitS3.Text = _configValue.Unit;
+            foreach (var item in _configs)
+            {
+                _cbSelectConfig.Items.Add(item.ConfigName);
+            }
+
+            _cbSelectConfig.SelectedIndexChanged += (s, o) =>
+            {
+                ComboBox cb = (ComboBox)s;
+                var configName = _cbSelectConfig.SelectedItem.ToString();
+                _configItem = _configs.FirstOrDefault(x => x.ConfigName == configName);
+                if (_configItem == null)
+                {
+                    MessageBox.Show("Không tìm thấy cấu hình này.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                _labUnitS1.Text = _configItem.Config.Unit;
+                _labUnitS2.Text = _configItem.Config.Unit;
+                _labUnitS3.Text = _configItem.Config.Unit;
+
+                SENSOR_1_ValueChanged(null, _tagS1);
+                SENSOR_2_ValueChanged(null, _tagS2);
+                SENSOR_3_ValueChanged(null, _tagS3);
+            };
+            //_cbSelectConfig.SelectedIndex = 0;
+            _cbSelectConfig.SelectedItem = _configs.FirstOrDefault().ConfigName;
             #endregion
 
             #region Khởi tạo easy drirver connector
@@ -120,7 +145,7 @@ namespace GiamSat.Scada
 
             _btnSettings.Click += (s, o) =>
             {
-                using (var nL=new frmLogin())
+                using (var nL = new frmLogin())
                 {
                     nL.ShowDialog();
 
@@ -132,11 +157,26 @@ namespace GiamSat.Scada
 
                             // Read the JSON file
                             string jsonContent1 = File.ReadAllText(_filePath);
-                            _configValue = JsonConvert.DeserializeObject<ConfigModel>(jsonContent1);
+                            _configs = JsonConvert.DeserializeObject<List<Configs>>(jsonContent1);
 
-                            _labUnitS1.Text = _configValue.Unit;
-                            _labUnitS2.Text = _configValue.Unit;
-                            _labUnitS3.Text = _configValue.Unit;
+                            GlobalVariable.InvokeIfRequired(this, () =>
+                            {
+                                // Clear the existing items in the ComboBox
+                                _cbSelectConfig.Items.Clear();
+
+                                // Add the updated items to the ComboBox
+                                foreach (var item in _configs)
+                                {
+                                    _cbSelectConfig.Items.Add(item.ConfigName);
+                                }
+                            });
+
+                            // Set the selected item to the first one in the list
+                            _cbSelectConfig.SelectedItem = nf.ConfigName;
+
+                            _labUnitS1.Text = _configItem.Config.Unit;
+                            _labUnitS2.Text = _configItem.Config.Unit;
+                            _labUnitS3.Text = _configItem.Config.Unit;
 
                             SENSOR_1_ValueChanged(null, _tagS1);
                             SENSOR_2_ValueChanged(null, _tagS2);
@@ -251,9 +291,9 @@ namespace GiamSat.Scada
 
                     //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
                     if ((_valueSensor1 <= 0 && _valueSensor2 <= 0 && _valueSensor3 <= 0)
-                        || _valueSensor1 >= _configValue.ValueActive
-                        || _valueSensor2 >= _configValue.ValueActive
-                        || _valueSensor3 >= _configValue.ValueActive
+                        || _valueSensor1 >= _configItem.Config.ValueActive
+                        || _valueSensor2 >= _configItem.Config.ValueActive
+                        || _valueSensor3 >= _configItem.Config.ValueActive
                         )
                     {
                         _newTransaction = false;
@@ -310,15 +350,15 @@ namespace GiamSat.Scada
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
-                _valueSensor1 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+                _valueSensor1 = Math.Round(newValue * _configItem.Config.Gain + _configItem.Config.Offset, _configItem.Config.DecimalNum);
                 _valueSensor1 = _valueSensor1 < 0 ? 0 : _valueSensor1;
 
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS1.Text = _valueSensor1.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor1 > 0 && _valueSensor1 < _configValue.ValueActive
-                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                if (_valueSensor1 > 0 && _valueSensor1 < _configItem.Config.ValueActive
+                    && _valueSensor2 < _configItem.Config.ValueActive && _valueSensor3 < _configItem.Config.ValueActive)
                 {
                     _newTransaction = true;
                 }
@@ -334,15 +374,15 @@ namespace GiamSat.Scada
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
-                _valueSensor2 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+                _valueSensor2 = Math.Round(newValue * _configItem.Config.Gain + _configItem.Config.Offset, _configItem.Config.DecimalNum);
                 _valueSensor2 = _valueSensor2 < 0 ? 0 : _valueSensor2;
 
                 GlobalVariable.InvokeIfRequired(this, () => { _labValueS2.Text = _valueSensor2.ToString(); });
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor2 > 0 && _valueSensor1 < _configValue.ValueActive
-                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                if (_valueSensor2 > 0 && _valueSensor1 < _configItem.Config.ValueActive
+                    && _valueSensor2 < _configItem.Config.ValueActive && _valueSensor3 < _configItem.Config.ValueActive)
                 {
                     _newTransaction = true;
                 }
@@ -358,7 +398,7 @@ namespace GiamSat.Scada
 
                 var newValue = double.TryParse(e.NewValue, out double value) ? value : 0;
 
-                _valueSensor3 = Math.Round(newValue * _configValue.Gain + _configValue.Offset, _configValue.DecimalNum);
+                _valueSensor3 = Math.Round(newValue * _configItem.Config.Gain + _configItem.Config.Offset, _configItem.Config.DecimalNum);
 
                 _valueSensor3 = _valueSensor3 < 0 ? 0 : _valueSensor3;
 
@@ -367,8 +407,8 @@ namespace GiamSat.Scada
 
                 //nếu giá trị cảm biến có sự thay đổi thì kích hoạt lại _newTransaction để vào kiểm tra tiếp.
                 //tất cả giá trị của các sensor < hơn  giá trị kích hoạt thì mới cho phép đo
-                if (_valueSensor3 > 0 && _valueSensor1 < _configValue.ValueActive
-                    && _valueSensor2 < _configValue.ValueActive && _valueSensor3 < _configValue.ValueActive)
+                if (_valueSensor3 > 0 && _valueSensor1 < _configItem.Config.ValueActive
+                    && _valueSensor2 < _configItem.Config.ValueActive && _valueSensor3 < _configItem.Config.ValueActive)
                 {
                     _newTransaction = true;
                 }
@@ -383,14 +423,14 @@ namespace GiamSat.Scada
         private void AppleCheck()
         {
             string sensorView = string.Empty;
-            string dataMax = _configValue.AppleSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
-            var sensorCount = _configValue.AppleSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
+            string dataMax = _configItem.Config.AppleSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
+            var sensorCount = _configItem.Config.AppleSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
             double valueFinal = 0;
             List<double> valueZoneList = new List<double>();
             EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
             string limit = string.Empty;
 
-            var sensors = _configValue.AppleSettings.Sensors.ToList();
+            var sensors = _configItem.Config.AppleSettings.Sensors.ToList();
             foreach (var item in sensors)
             {
                 if (item == EnumSensor.SENSOR_1)
@@ -409,10 +449,10 @@ namespace GiamSat.Scada
             }
 
             //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
-            valueFinal = _configValue.AppleSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
+            valueFinal = _configItem.Config.AppleSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
 
             //kiểm tra
-            foreach (var item in _configValue.AppleSettings.Zones)
+            foreach (var item in _configItem.Config.AppleSettings.Zones)
             {
                 if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
                 {
@@ -443,10 +483,10 @@ namespace GiamSat.Scada
         private void ArrowCheck()
         {
             string sensorView = string.Empty;
-            string dataMax = _configValue.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
+            string dataMax = _configItem.Config.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
             string zoneLimit = string.Empty;
 
-            var sensorCount = _configValue.ArrowSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
+            var sensorCount = _configItem.Config.ArrowSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
             double valueFinal = 0;//giá trị cuối cùng dùng để phân Zone.
             List<double> valueZoneList = new List<double>();//list chứa các giá trị của các sensor được chọn để phân zone.
             EnumArrowZoneName zone = EnumArrowZoneName.V1;//tên zone cuối cùng được xác định.
@@ -455,7 +495,7 @@ namespace GiamSat.Scada
             string compareDisplay = string.Empty;
 
             //lấy các giá trị của cảm biến được chọn phân ZONE.
-            var sensors = _configValue.ArrowSettings.Sensors.ToList();
+            var sensors = _configItem.Config.ArrowSettings.Sensors.ToList();
             foreach (var item in sensors)
             {
                 if (item == EnumSensor.SENSOR_1)
@@ -473,10 +513,10 @@ namespace GiamSat.Scada
                     sensorView = string.Join(", ", sensorView, item.ToString());
             }
             //kiểm tra xem phần chọn các sensor phân zone theo điều kiện, nếu thỏa mãn thì add thêm vào.
-            var sensorsConditons = _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.Sensors.ToList();
+            var sensorsConditons = _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.Sensors.ToList();
             foreach (var item in sensorsConditons)
             {
-                if (item == EnumSensor.SENSOR_1 && _valueSensor1 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                if (item == EnumSensor.SENSOR_1 && _valueSensor1 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor1);
 
@@ -487,7 +527,7 @@ namespace GiamSat.Scada
                     else
                         sensorView = string.Join(", ", sensorView, item.ToString());
                 }
-                else if (item == EnumSensor.SENSOR_2 && _valueSensor2 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                else if (item == EnumSensor.SENSOR_2 && _valueSensor2 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor2);
 
@@ -498,7 +538,7 @@ namespace GiamSat.Scada
                     else
                         sensorView = string.Join(", ", sensorView, item.ToString());
                 }
-                else if (item == EnumSensor.SENSOR_3 && _valueSensor3 > _configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
+                else if (item == EnumSensor.SENSOR_3 && _valueSensor3 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor3);
 
@@ -512,10 +552,10 @@ namespace GiamSat.Scada
             }
 
             //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
-            valueFinal = _configValue.ArrowSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
+            valueFinal = _configItem.Config.ArrowSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
 
             //kiểm tra
-            foreach (var item in _configValue.ArrowSettings.Zones)
+            foreach (var item in _configItem.Config.ArrowSettings.Zones)
             {
                 if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
                 {
@@ -526,14 +566,14 @@ namespace GiamSat.Scada
             }
 
             //tính giá trị OK/NG.
-            if (_configValue.ArrowSettings.S3_S1OrS1_S3)
+            if (_configItem.Config.ArrowSettings.S3_S1OrS1_S3)
             {
-                compareValue = Math.Round(_valueSensor3 - _valueSensor1, _configValue.DecimalNum);
+                compareValue = Math.Round(_valueSensor3 - _valueSensor1, _configItem.Config.DecimalNum);
                 compareDisplay = "Sensor 3 - Sensor 1";
             }
             else
             {
-                compareValue = Math.Round(_valueSensor1 - _valueSensor3, _configValue.DecimalNum);
+                compareValue = Math.Round(_valueSensor1 - _valueSensor3, _configItem.Config.DecimalNum);
                 compareDisplay = "Sensor 1 - Sensor 3";
             }
 
@@ -541,7 +581,7 @@ namespace GiamSat.Scada
             {
                 //ZONE
                 _labArrowZone.Text = zone.ToString();
-                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị đặt: {_configValue.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue}\n+ {zoneLimit}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
+                _labArrowValueFinal.Text = $"+ Sensors: {sensorView}\n+ {dataMax}\n+ Giá trị đặt: {_configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue}\n+ {zoneLimit}\n+ Giá trị sensor phân zone: {valueFinal.ToString()}";
 
                 if (zone == EnumArrowZoneName.V1)
                     _labArrowZone.BackColor = Color.White;
@@ -555,10 +595,10 @@ namespace GiamSat.Scada
                     _labArrowZone.BackColor = Color.Aqua;
 
                 //OK/NG
-                if (_configValue.ActiveCheckHeadStraight)
+                if (_configItem.Config.ActiveCheckHeadStraight)
                 {
-                    _labArrowValueHead.Text = $"+ {compareDisplay}\n+ Giá trị đặt: {_configValue.ArrowSettings.CompareValue}\n+ Giá trị tính toán: {compareValue.ToString()}";
-                    if (compareValue >= _configValue.ArrowSettings.CompareValue)
+                    _labArrowValueHead.Text = $"+ {compareDisplay}\n+ Giá trị đặt: {_configItem.Config.ArrowSettings.CompareValue}\n+ Giá trị tính toán: {compareValue.ToString()}";
+                    if (compareValue >= _configItem.Config.ArrowSettings.CompareValue)
                     {
                         _labArrowResultHead.BackColor = Color.Green;
                         _labArrowResultHead.Text = "OK";

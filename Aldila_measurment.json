@@ -11,7 +11,7 @@
   "IsReadOnly": true,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:15.8188461+07:00",
-  "ModifiedDate": "2025-04-24T23:23:31.1638989+07:00",
+  "ModifiedDate": "2025-04-27T22:24:35.7110543+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -31,13 +31,13 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:39.6106996+07:00",
-  "ModifiedDate": "2025-04-24T23:23:31.1638989+07:00",
+  "ModifiedDate": "2025-04-27T22:24:35.7110543+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
   "Parameters": {
-    "Port": "COM5",
-    "ScanRate": "1000",
+    "Port": "COM10",
+    "ScanRate": "100",
     "Baudrate": "9600",
     "Parity": "None",
     "StopBits": "One",
@@ -55,7 +55,7 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:53.7512172+07:00",
-  "ModifiedDate": "2025-04-25T10:01:41.5044988+07:00",
+  "ModifiedDate": "2025-04-28T22:24:23.7831374+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,

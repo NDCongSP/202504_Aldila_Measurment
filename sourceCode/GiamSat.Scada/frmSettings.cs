@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,9 +17,15 @@ namespace GiamSat.Scada
 {
     public partial class frmSettings : Form
     {
-        private ConfigModel _model;
+        public string ConfigName { get; set; } = string.Empty;
+
+        List<Configs> _configs = new List<Configs>();
+        Configs _configItem;
+
         string _fileName;
         string _filePath;
+
+        bool _isUpdate = true;
 
         public frmSettings()
         {
@@ -28,11 +35,41 @@ namespace GiamSat.Scada
             {
                 try
                 {
-                    string defaultJson = JsonConvert.SerializeObject(_model, Formatting.Indented);
+                    if (string.IsNullOrEmpty(_txtProfileName.Text))
+                    {
+                        MessageBox.Show("Vui lòng nhập tên cấu hình.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (!_isUpdate && _configs.FirstOrDefault(x => x.ConfigName == _txtProfileName.Text) != null)
+                    {
+                        MessageBox.Show("Tên cấu hình đã tồn tại.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (!_isUpdate)
+                    {
+                        _configs.Add(_configItem);
+                    }
+
+                    string defaultJson = JsonConvert.SerializeObject(_configs, Formatting.Indented);
                     File.WriteAllText(_filePath, defaultJson);
                     MessageBox.Show("LƯU CÀI ĐẶT THÀNH CÔNG.");
 
-                    this.Close();
+                    // Read the JSON file
+                    GlobalVariable.InvokeIfRequired(this, () =>
+                    {
+                        // Clear the existing items in the ComboBox
+                        _cbSelectConfig.Items.Clear();
+
+                        // Add the updated items to the ComboBox
+                        foreach (var item in _configs)
+                        {
+                            _cbSelectConfig.Items.Add(item.ConfigName);
+                        }
+                    });
+
+                    //this.Close();
                 }
                 catch (Exception ex)
                 {
@@ -42,10 +79,20 @@ namespace GiamSat.Scada
 
             _btnChangePass.Click += (s, o) =>
             {
-                using (var nf=new frmChangePass())
+                using (var nf = new frmChangePass())
                 {
                     nf.ShowDialog();
                 }
+            };
+
+            _btnAddNewConfig.Click += (s, o) =>
+            {
+                _configItem = new Configs();
+
+                _configItem.Config = _configs.FirstOrDefault()?.Config;
+                _isUpdate = false;
+
+                ShowControl(_configItem);
             };
 
             #region Đăng ký các sự kiện của các controls để cập nhật các giá trị cài đặt mới.
@@ -55,17 +102,17 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
+                var isExisst = _configItem.Config.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_1);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_1);
 
                     //kiểm tra xem ở bên chọn sensor phân zone theo điều kiện có chọn sensor này thì xóa đi, và khóa control chọn sensor nay lại.
-                    var check = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
+                    var check = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
                                             .FirstOrDefault(x => x == EnumSensor.SENSOR_1);
 
-                    if (check != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_1);
+                    if (check != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_1);
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -75,7 +122,7 @@ namespace GiamSat.Scada
                 }
                 else
                 {
-                    if (isExisst != null) _model.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_1);
+                    if (isExisst != null) _configItem.Config.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_1);
 
                     //mở khóa control chọn sensor lại cho phần chọn sensor phân zone theo điều kiện.
                     GlobalVariable.InvokeIfRequired(this, () =>
@@ -89,17 +136,17 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
+                var isExisst = _configItem.Config.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_2);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_2);
 
                     //kiểm tra xem ở bên chọn sensor phân zone theo điều kiện có chọn sensor này thì xóa đi, và khóa control chọn sensor nay lại.
-                    var check = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
+                    var check = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
                                             .FirstOrDefault(x => x == EnumSensor.SENSOR_2);
 
-                    if (check != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_2);
+                    if (check != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_2);
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -109,7 +156,7 @@ namespace GiamSat.Scada
                 }
                 else
                 {
-                    if (isExisst != null) _model.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_2);
+                    if (isExisst != null) _configItem.Config.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_2);
 
                     //mở khóa control chọn sensor lại cho phần chọn sensor phân zone theo điều kiện.
                     GlobalVariable.InvokeIfRequired(this, () =>
@@ -123,17 +170,17 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
+                var isExisst = _configItem.Config.ArrowSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_3);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.ArrowSettings?.Sensors.Add(EnumSensor.SENSOR_3);
 
                     //kiểm tra xem ở bên chọn sensor phân zone theo điều kiện có chọn sensor này thì xóa đi, và khóa control chọn sensor nay lại.
-                    var check = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
+                    var check = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?
                                             .FirstOrDefault(x => x == EnumSensor.SENSOR_3);
 
-                    if (check != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_3);
+                    if (check != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Remove(EnumSensor.SENSOR_3);
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -143,7 +190,7 @@ namespace GiamSat.Scada
                 }
                 else
                 {
-                    if (isExisst != null) _model.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_3);
+                    if (isExisst != null) _configItem.Config.ArrowSettings?.Sensors.Remove(EnumSensor.SENSOR_3);
 
                     //mở khóa control chọn sensor lại cho phần chọn sensor phân zone theo điều kiện.
                     GlobalVariable.InvokeIfRequired(this, () =>
@@ -160,7 +207,7 @@ namespace GiamSat.Scada
 
                 if (ck.Checked)
                 {
-                    _model.ArrowSettings.DataMax = true;
+                    _configItem.Config.ArrowSettings.DataMax = true;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -174,7 +221,7 @@ namespace GiamSat.Scada
 
                 if (ck.Checked)
                 {
-                    _model.ArrowSettings.DataMax = false;
+                    _configItem.Config.ArrowSettings.DataMax = false;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -190,15 +237,15 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExist = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
+                var isExist = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
 
                 if (ck.Checked)
                 {
-                    if (isExist == null || isExist == 0) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_1);
+                    if (isExist == null || isExist == 0) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_1);
                 }
                 else
                 {
-                    if (isExist != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_1);
+                    if (isExist != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_1);
                 }
             };
 
@@ -206,15 +253,15 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExist = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
+                var isExist = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
 
                 if (ck.Checked)
                 {
-                    if (isExist == null || isExist == 0) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_2);
+                    if (isExist == null || isExist == 0) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_2);
                 }
                 else
                 {
-                    if (isExist != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_2);
+                    if (isExist != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_2);
                 }
             };
 
@@ -222,22 +269,22 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExist = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
+                var isExist = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
 
                 if (ck.Checked)
                 {
-                    if (isExist == null || isExist == 0) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_3);
+                    if (isExist == null || isExist == 0) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.Add(EnumSensor.SENSOR_3);
                 }
                 else
                 {
-                    if (isExist != null) _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_3);
+                    if (isExist != null) _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.Remove(EnumSensor.SENSOR_3);
                 }
             };
 
             _txtArrowConditionsValue.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue = double.TryParse(t.Text, out double value) ? value : 0;
             };
             #endregion
 
@@ -245,65 +292,65 @@ namespace GiamSat.Scada
             _txtFromV1.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).FromValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV1.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).ToValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V1).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV3.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).FromValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV3.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).ToValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V3).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV6.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).FromValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV6.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).ToValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V6).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromV9.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).FromValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToV9.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).ToValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.V9).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromVSS.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).FromValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToVSS.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).ToValue
+                _configItem.Config.ArrowSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumArrowZoneName.VSS).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             #endregion
@@ -315,7 +362,7 @@ namespace GiamSat.Scada
 
                 if (ck.Checked)
                 {
-                    _model.ArrowSettings.S3_S1OrS1_S3 = true;
+                    _configItem.Config.ArrowSettings.S3_S1OrS1_S3 = true;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -327,11 +374,11 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                _model.ArrowSettings.DataMax = ck.Checked;
+                _configItem.Config.ArrowSettings.DataMax = ck.Checked;
 
                 if (ck.Checked)
                 {
-                    _model.ArrowSettings.S3_S1OrS1_S3 = false;
+                    _configItem.Config.ArrowSettings.S3_S1OrS1_S3 = false;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -343,7 +390,7 @@ namespace GiamSat.Scada
             _txtArrowCompareValue.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ArrowSettings.CompareValue = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.ArrowSettings.CompareValue = double.TryParse(t.Text, out double value) ? value : 0;
             };
             #endregion
             #endregion
@@ -354,15 +401,15 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
+                var isExisst = _configItem.Config.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_1);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_1);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_1);
                 }
                 else
                 {
-                    if (isExisst != null) _model.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_1);
+                    if (isExisst != null) _configItem.Config.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_1);
                 }
             };
 
@@ -370,15 +417,15 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
+                var isExisst = _configItem.Config.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_2);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_2);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_2);
                 }
                 else
                 {
-                    if (isExisst != null) _model.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_2);
+                    if (isExisst != null) _configItem.Config.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_2);
                 }
             };
 
@@ -386,15 +433,15 @@ namespace GiamSat.Scada
             {
                 CheckBox ck = (CheckBox)s;
 
-                var isExisst = _model.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
+                var isExisst = _configItem.Config.AppleSettings?.Sensors?.FirstOrDefault(x => x == EnumSensor.SENSOR_3);
 
                 if (ck.Checked)
                 {
-                    if (isExisst == null || isExisst == 0) _model.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_3);
+                    if (isExisst == null || isExisst == 0) _configItem.Config.AppleSettings?.Sensors.Add(EnumSensor.SENSOR_3);
                 }
                 else
                 {
-                    if (isExisst != null) _model.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_3);
+                    if (isExisst != null) _configItem.Config.AppleSettings?.Sensors.Remove(EnumSensor.SENSOR_3);
                 }
             };
 
@@ -405,7 +452,7 @@ namespace GiamSat.Scada
 
                 if (ck.Checked)
                 {
-                    _model.AppleSettings.DataMax = true;
+                    _configItem.Config.AppleSettings.DataMax = true;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -419,7 +466,7 @@ namespace GiamSat.Scada
 
                 if (ck.Checked)
                 {
-                    _model.AppleSettings.DataMax = false;
+                    _configItem.Config.AppleSettings.DataMax = false;
 
                     GlobalVariable.InvokeIfRequired(this, () =>
                     {
@@ -433,80 +480,78 @@ namespace GiamSat.Scada
             _txtFromOK.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.OK).FromValue
+                _configItem.Config.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.OK).FromValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToOK.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.OK).ToValue
+                _configItem.Config.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.OK).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtFromNG.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.NG).FromValue
-                                        = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.NG).FromValue
+                                    = double.TryParse(t.Text, out double value) ? value : 0;
             };
             _txtToNG.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.NG).ToValue
+                _configItem.Config.AppleSettings.Zones.FirstOrDefault(x => x.ZoneName == EnumApple_Ok_NG.NG).ToValue
                                         = double.TryParse(t.Text, out double value) ? value : 0;
             };
             #endregion
             #endregion
 
             #region Systems
+            _txtProfileName.TextChanged += (s, o) =>
+            {
+                TextBox t = (TextBox)s;
+                _configItem.ConfigName = t.Text;
+            };
+
             _txtDecimalNum.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.DecimalNum = int.TryParse(t.Text, out int value) ? value : 0;
+                _configItem.Config.DecimalNum = int.TryParse(t.Text, out int value) ? value : 0;
             };
 
             _txtGain.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.Gain = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.Gain = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtOffset.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.Offset = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.Offset = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _txtUnit.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.Unit = t.Text;
+                _configItem.Config.Unit = t.Text;
             };
 
             _txtValueActive.TextChanged += (s, o) =>
             {
                 TextBox t = (TextBox)s;
-                _model.ValueActive = double.TryParse(t.Text, out double value) ? value : 0;
+                _configItem.Config.ValueActive = double.TryParse(t.Text, out double value) ? value : 0;
             };
 
             _checkBoxOnOffCheckHeadStraight.CheckedChanged += (s, o) =>
             {
                 CheckBox ck = (CheckBox)s;
 
-                _model.ActiveCheckHeadStraight = ck.Checked;
+                _configItem.Config.ActiveCheckHeadStraight = ck.Checked;
             };
             #endregion
             #endregion
 
             Load += FrmSettings_Load;
-
-            this.KeyDown += (s, o) =>
-            {
-                if (o.KeyCode == Keys.Escape)
-                {
-                    this.Close();
-                }
-            };
         }
 
         private void FrmSettings_Load(object sender, EventArgs e)
@@ -561,32 +606,67 @@ namespace GiamSat.Scada
                     AppleSettings = appleSettings
                 };
 
-                string defaultJson = JsonConvert.SerializeObject(configSystem, Formatting.Indented);
+                _configs.Add(new Configs()
+                {
+                    ConfigName = "Cấu hình 1",
+                    Config = configSystem
+                });
+
+                string defaultJson = JsonConvert.SerializeObject(_configs, Formatting.Indented);
                 File.WriteAllText(_filePath, defaultJson);
                 Console.WriteLine("File created successfully.\n");
             }
 
             // Read the JSON file
             string jsonContent = File.ReadAllText(_filePath);
-            _model = JsonConvert.DeserializeObject<ConfigModel>(jsonContent);
+            _configs = JsonConvert.DeserializeObject<List<Configs>>(jsonContent);
 
-            ShowControl();
+            foreach (var item in _configs)
+            {
+                _cbSelectConfig.Items.Add(item.ConfigName);
+            }
+
+            _cbSelectConfig.SelectedIndexChanged += (s, o) =>
+            {
+                ComboBox cb = (ComboBox)s;
+                var configName = _cbSelectConfig.SelectedItem.ToString();
+
+                _configItem = new Configs();
+                _configItem = _configs.FirstOrDefault(x => x.ConfigName == configName);
+                if (_configItem == null)
+                {
+                    MessageBox.Show("Không tìm thấy cấu hình này.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                configName = _configItem.ConfigName;
+
+                _isUpdate = true;
+
+                ShowControl(_configItem);
+            };
+            //_cbSelectConfig.SelectedIndex = 0;
+            _cbSelectConfig.SelectedItem = _configs.FirstOrDefault().ConfigName;
+
+            //ShowControl(_configs.FirstOrDefault());
         }
 
-        void ShowControl()
+        void ShowControl(Configs model)
         {
             GlobalVariable.InvokeIfRequired(this, () =>
             {
-                _txtDecimalNum.Text = _model.DecimalNum.ToString();
-                _txtTagPath.Text = _model.TagPath;
-                _txtUnit.Text = _model.Unit;
-                _txtGain.Text = _model.Gain.ToString();
-                _txtOffset.Text = _model.Offset.ToString();
-                _txtValueActive.Text = _model.ValueActive.ToString();
-                _checkBoxOnOffCheckHeadStraight.Checked = _model.ActiveCheckHeadStraight;
+                _txtProfileName.Text = model.ConfigName;
+
+                _txtDecimalNum.Text = model.Config.DecimalNum.ToString();
+                _txtTagPath.Text = model.Config.TagPath;
+                _txtUnit.Text = model.Config.Unit;
+                _txtGain.Text = model.Config.Gain.ToString();
+                _txtOffset.Text = model.Config.Offset.ToString();
+                _txtValueActive.Text = model.Config.ValueActive.ToString();
+                _checkBoxOnOffCheckHeadStraight.Checked = model.Config.ActiveCheckHeadStraight;
 
                 #region Apple
-                var sensorsAppleSensors = _model.AppleSettings?.Sensors?.ToList();
+                var sensorsAppleSensors = _configItem.Config.AppleSettings?.Sensors?.ToList();
                 foreach (var item in sensorsAppleSensors)
                 {
                     if (item == EnumSensor.SENSOR_1)
@@ -597,7 +677,7 @@ namespace GiamSat.Scada
                         _checkBoxAppleSensor3.Checked = item == EnumSensor.SENSOR_3 ? true : false;
                 }
 
-                if (_model.AppleSettings.DataMax)
+                if (model.Config.AppleSettings.DataMax)
                 {
                     _checkBoxAppleDataMax.Checked = true;
                     _checkBoxAppleDataMin.Checked = false;
@@ -608,7 +688,7 @@ namespace GiamSat.Scada
                     _checkBoxAppleDataMin.Checked = true;
                 }
 
-                foreach (var item in _model.AppleSettings.Zones)
+                foreach (var item in model.Config.AppleSettings.Zones)
                 {
                     if (item.ZoneName == EnumApple_Ok_NG.OK)
                     {
@@ -625,7 +705,7 @@ namespace GiamSat.Scada
 
                 #region Arrow
                 #region chọn sensor so sánh phân zone
-                var sensorsArrowSensors = _model.ArrowSettings?.Sensors?.ToList();
+                var sensorsArrowSensors = model.Config.ArrowSettings?.Sensors?.ToList();
                 foreach (var item in sensorsArrowSensors)
                 {
                     if (item == EnumSensor.SENSOR_1)
@@ -636,7 +716,7 @@ namespace GiamSat.Scada
                         _checkBoxArrowSensor3.Checked = item == EnumSensor.SENSOR_3 ? true : false;
                 }
 
-                if (_model.ArrowSettings.DataMax)
+                if (model.Config.ArrowSettings.DataMax)
                 {
                     _checkBoxArrowDataMax.Checked = true;
                     _checkBoxArrowDataMin.Checked = false;
@@ -648,7 +728,7 @@ namespace GiamSat.Scada
                 }
                 #endregion
                 #region ZONE
-                foreach (var item in _model.ArrowSettings?.Zones)
+                foreach (var item in model.Config.ArrowSettings?.Zones)
                 {
                     if (item.ZoneName == EnumArrowZoneName.V1)
                     {
@@ -678,9 +758,9 @@ namespace GiamSat.Scada
                 }
                 #endregion
                 #region CHỌN SENSOR SO SÁNH PHÂN ZONE CÓ ĐIỀU KIỆN
-                _txtArrowConditionsValue.Text = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.ConditionsValue.ToString();
+                _txtArrowConditionsValue.Text = model.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.ConditionsValue.ToString();
 
-                var sensorsArrowConditionSensors = _model.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.ToList();
+                var sensorsArrowConditionSensors = model.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings.Sensors?.ToList();
                 foreach (var item in sensorsArrowConditionSensors)
                 {
                     if (item == EnumSensor.SENSOR_1)
@@ -691,8 +771,9 @@ namespace GiamSat.Scada
                         _checkBoxArrowSensor3Conditions.Checked = item == EnumSensor.SENSOR_3 ? true : false;
                 }
                 #endregion
+
                 #region Phân định đầu thẳng OK/NG
-                if ((bool)(_model.ArrowSettings?.S3_S1OrS1_S3))
+                if ((bool)(_configItem.Config.ArrowSettings?.S3_S1OrS1_S3))
                 {
                     _checkBoxArrowS3_S1.Checked = true;
                     _checkBoxArrowS1_S3.Checked = false;
@@ -703,7 +784,7 @@ namespace GiamSat.Scada
                     _checkBoxArrowS1_S3.Checked = true;
                 }
 
-                _txtArrowCompareValue.Text = _model.ArrowSettings?.CompareValue.ToString();
+                _txtArrowCompareValue.Text = _configItem.Config.ArrowSettings?.CompareValue.ToString();
                 #endregion
                 #endregion
             });
