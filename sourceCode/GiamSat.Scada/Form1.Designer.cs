@@ -58,6 +58,7 @@ namespace GiamSat.Scada
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this._cbSelectConfig = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.easyTextBox1 = new EasyScada.Winforms.Controls.EasyTextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -66,6 +67,7 @@ namespace GiamSat.Scada
             this._groupBoxApple.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.easyTextBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // _labTime
@@ -396,11 +398,31 @@ namespace GiamSat.Scada
             this.label1.TabIndex = 15;
             this.label1.Text = "Chọn cấu hình để đo:";
             // 
+            // easyTextBox1
+            // 
+            this.easyTextBox1.DropDownBackColor = System.Drawing.SystemColors.Control;
+            this.easyTextBox1.DropDownBorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.easyTextBox1.DropDownDirection = EasyScada.Winforms.Controls.DropDownDirection.None;
+            this.easyTextBox1.DropDownFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.easyTextBox1.DropDownForeColor = System.Drawing.SystemColors.ControlText;
+            this.easyTextBox1.HightLightStatusTime = 3;
+            this.easyTextBox1.Location = new System.Drawing.Point(395, 17);
+            this.easyTextBox1.Name = "easyTextBox1";
+            this.easyTextBox1.Role = null;
+            this.easyTextBox1.Size = new System.Drawing.Size(100, 20);
+            this.easyTextBox1.StringFormat = null;
+            this.easyTextBox1.TabIndex = 16;
+            this.easyTextBox1.TagPath = "Local Station/Channel1/Device/SENSOR_1";
+            this.easyTextBox1.Text = "easyTextBox1";
+            this.easyTextBox1.WriteDelay = 200;
+            this.easyTextBox1.WriteTrigger = EasyScada.Core.WriteTrigger.OnEnter;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1068, 804);
+            this.Controls.Add(this.easyTextBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this._cbSelectConfig);
             this.Controls.Add(this.groupBox5);
@@ -424,6 +446,7 @@ namespace GiamSat.Scada
             this._groupBoxApple.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.easyTextBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -458,6 +481,7 @@ namespace GiamSat.Scada
         private System.Windows.Forms.Label _labAppleValueFinal;
         private System.Windows.Forms.ComboBox _cbSelectConfig;
         private System.Windows.Forms.Label label1;
+        private EasyScada.Winforms.Controls.EasyTextBox easyTextBox1;
     }
 }
 

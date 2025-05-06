@@ -103,10 +103,6 @@ namespace GiamSat.Scada
                 _labUnitS1.Text = _configItem.Config.Unit;
                 _labUnitS2.Text = _configItem.Config.Unit;
                 _labUnitS3.Text = _configItem.Config.Unit;
-
-                SENSOR_1_ValueChanged(null, _tagS1);
-                SENSOR_2_ValueChanged(null, _tagS2);
-                SENSOR_3_ValueChanged(null, _tagS3);
             };
             //_cbSelectConfig.SelectedIndex = 0;
             _cbSelectConfig.SelectedItem = _configs.FirstOrDefault().ConfigName;

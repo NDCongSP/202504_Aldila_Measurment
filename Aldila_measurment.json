@@ -11,7 +11,7 @@
   "IsReadOnly": true,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:15.8188461+07:00",
-  "ModifiedDate": "2025-04-27T22:24:35.7110543+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -31,12 +31,12 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:39.6106996+07:00",
-  "ModifiedDate": "2025-04-27T22:24:35.7110543+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
   "Parameters": {
-    "Port": "COM10",
+    "Port": "COM5",
     "ScanRate": "100",
     "Baudrate": "9600",
     "Parity": "None",
@@ -55,7 +55,7 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:53.7512172+07:00",
-  "ModifiedDate": "2025-04-28T22:24:23.7831374+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -85,7 +85,10 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400121"
+  }
 },
   "Address": "400121",
   "DataTypeName": "Float",
@@ -112,7 +115,10 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400123"
+  }
 },
   "Address": "400123",
   "DataTypeName": "Float",
@@ -139,7 +145,10 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400125"
+  }
 },
   "Address": "400125",
   "DataTypeName": "Float",
