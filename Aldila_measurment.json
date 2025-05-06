@@ -11,7 +11,7 @@
   "IsReadOnly": true,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:15.8188461+07:00",
-  "ModifiedDate": "2025-04-19T16:02:27.9062727+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -31,13 +31,13 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:39.6106996+07:00",
-  "ModifiedDate": "2025-04-19T16:02:27.9072699+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
   "Parameters": {
-    "Port": "COM10",
-    "ScanRate": "1000",
+    "Port": "COM5",
+    "ScanRate": "100",
     "Baudrate": "9600",
     "Parity": "None",
     "StopBits": "One",
@@ -55,7 +55,7 @@
   "IsReadOnly": false,
   "Enabled": true,
   "CreatedDate": "2025-04-12T14:39:53.7512172+07:00",
-  "ModifiedDate": "2025-04-19T16:02:27.9072699+07:00",
+  "ModifiedDate": "2025-05-06T20:14:07.4160732+07:00",
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
@@ -67,10 +67,10 @@
     "InputContactReadBlockSettings": "[]",
     "OutputCoilsReadBlockSettings": "[]",
     "InputRegisterReadBlockSettings": "[]",
-    "HoldingRegisterReadBlockSettings": "[]"
+    "HoldingRegisterReadBlockSettings": "[\r\n  {\r\n    \"AddressType\": 4,\r\n    \"Enabled\": true,\r\n    \"StartAddress\": \"400121\",\r\n    \"EndAddress\": \"400126\"\r\n  }\r\n]"
   }
 },
-  "ByteOrder": "ABCD",
+  "ByteOrder": "CDAB",
   "Childs": [],
   "HaveTags": true,
   "Tags": [
@@ -85,10 +85,13 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400121"
+  }
 },
-  "Address": "400001",
-  "DataTypeName": "Word",
+  "Address": "400121",
+  "DataTypeName": "Float",
   "RefreshRate": 100,
   "ByteOrder": 0,
   "AccessPermission": "ReadAndWrite",
@@ -112,10 +115,13 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400123"
+  }
 },
-  "Address": "400002",
-  "DataTypeName": "Word",
+  "Address": "400123",
+  "DataTypeName": "Float",
   "RefreshRate": 100,
   "ByteOrder": 0,
   "AccessPermission": "ReadAndWrite",
@@ -139,10 +145,13 @@
   "ParameterContainer": {
   "DisplayName": null,
   "DisplayParameters": null,
-  "Parameters": {}
+  "Parameters": {
+    "DataType": "Float",
+    "Address": "400125"
+  }
 },
-  "Address": "400003",
-  "DataTypeName": "Word",
+  "Address": "400125",
+  "DataTypeName": "Float",
   "RefreshRate": 100,
   "ByteOrder": 0,
   "AccessPermission": "ReadAndWrite",

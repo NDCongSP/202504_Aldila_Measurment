@@ -97,6 +97,11 @@
             this._lab = new System.Windows.Forms.Label();
             this._btnSave = new System.Windows.Forms.Button();
             this._btnChangePass = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this._cbSelectConfig = new System.Windows.Forms.ComboBox();
+            this._txtProfileName = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this._btnAddNewConfig = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -446,7 +451,7 @@
             this.groupBox1.Controls.Add(this.groupBox4);
             this.groupBox1.Controls.Add(this.groupBox3);
             this.groupBox1.Controls.Add(this.groupBox2);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 53);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(775, 380);
             this.groupBox1.TabIndex = 0;
@@ -457,7 +462,7 @@
             // 
             this.groupBox6.Controls.Add(this.groupBox9);
             this.groupBox6.Controls.Add(this.groupBox10);
-            this.groupBox6.Location = new System.Drawing.Point(12, 398);
+            this.groupBox6.Location = new System.Drawing.Point(12, 439);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(775, 183);
             this.groupBox6.TabIndex = 19;
@@ -624,7 +629,7 @@
             this.groupBox7.Controls.Add(this.label10);
             this.groupBox7.Controls.Add(this._txtDecimalNum);
             this.groupBox7.Controls.Add(this._lab);
-            this.groupBox7.Location = new System.Drawing.Point(12, 596);
+            this.groupBox7.Location = new System.Drawing.Point(12, 637);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(775, 156);
             this.groupBox7.TabIndex = 20;
@@ -740,7 +745,7 @@
             // 
             // _btnSave
             // 
-            this._btnSave.Location = new System.Drawing.Point(629, 758);
+            this._btnSave.Location = new System.Drawing.Point(629, 799);
             this._btnSave.Name = "_btnSave";
             this._btnSave.Size = new System.Drawing.Size(158, 23);
             this._btnSave.TabIndex = 21;
@@ -749,19 +754,67 @@
             // 
             // _btnChangePass
             // 
-            this._btnChangePass.Location = new System.Drawing.Point(12, 758);
+            this._btnChangePass.Location = new System.Drawing.Point(12, 799);
             this._btnChangePass.Name = "_btnChangePass";
             this._btnChangePass.Size = new System.Drawing.Size(158, 23);
             this._btnChangePass.TabIndex = 22;
             this._btnChangePass.Text = "ĐỔI MẬT KHẨU";
             this._btnChangePass.UseVisualStyleBackColor = true;
             // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.label19.Location = new System.Drawing.Point(12, 9);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(138, 13);
+            this.label19.TabIndex = 24;
+            this.label19.Text = "CHỌN CẤU HÌNH CÀI ĐẶT";
+            // 
+            // _cbSelectConfig
+            // 
+            this._cbSelectConfig.FormattingEnabled = true;
+            this._cbSelectConfig.Location = new System.Drawing.Point(12, 26);
+            this._cbSelectConfig.Name = "_cbSelectConfig";
+            this._cbSelectConfig.Size = new System.Drawing.Size(226, 21);
+            this._cbSelectConfig.TabIndex = 23;
+            // 
+            // _txtProfileName
+            // 
+            this._txtProfileName.Location = new System.Drawing.Point(328, 27);
+            this._txtProfileName.Name = "_txtProfileName";
+            this._txtProfileName.Size = new System.Drawing.Size(226, 20);
+            this._txtProfileName.TabIndex = 19;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(325, 9);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(52, 13);
+            this.label20.TabIndex = 18;
+            this.label20.Text = "TÊN MỚI";
+            // 
+            // _btnAddNewConfig
+            // 
+            this._btnAddNewConfig.Location = new System.Drawing.Point(628, 27);
+            this._btnAddNewConfig.Name = "_btnAddNewConfig";
+            this._btnAddNewConfig.Size = new System.Drawing.Size(158, 23);
+            this._btnAddNewConfig.TabIndex = 25;
+            this._btnAddNewConfig.Text = "THÊM CẤU HÌNH";
+            this._btnAddNewConfig.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AcceptButton = this._btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(807, 793);
+            this.ClientSize = new System.Drawing.Size(807, 832);
+            this.Controls.Add(this._btnAddNewConfig);
+            this.Controls.Add(this._txtProfileName);
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this._cbSelectConfig);
             this.Controls.Add(this._btnChangePass);
             this.Controls.Add(this._btnSave);
             this.Controls.Add(this.groupBox7);
@@ -789,6 +842,7 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -862,5 +916,10 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.CheckBox _checkBoxOnOffCheckHeadStraight;
         private System.Windows.Forms.Button _btnChangePass;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.ComboBox _cbSelectConfig;
+        private System.Windows.Forms.TextBox _txtProfileName;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Button _btnAddNewConfig;
     }
 }
