@@ -102,6 +102,7 @@
             this._txtProfileName = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
             this._btnAddNewConfig = new System.Windows.Forms.Button();
+            this._btnDelete = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -781,7 +782,7 @@
             // 
             // _txtProfileName
             // 
-            this._txtProfileName.Location = new System.Drawing.Point(328, 27);
+            this._txtProfileName.Location = new System.Drawing.Point(279, 26);
             this._txtProfileName.Name = "_txtProfileName";
             this._txtProfileName.Size = new System.Drawing.Size(226, 20);
             this._txtProfileName.TabIndex = 19;
@@ -789,7 +790,7 @@
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(325, 9);
+            this.label20.Location = new System.Drawing.Point(276, 9);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(52, 13);
             this.label20.TabIndex = 18;
@@ -797,12 +798,25 @@
             // 
             // _btnAddNewConfig
             // 
-            this._btnAddNewConfig.Location = new System.Drawing.Point(628, 27);
+            this._btnAddNewConfig.BackColor = System.Drawing.Color.Green;
+            this._btnAddNewConfig.ForeColor = System.Drawing.Color.White;
+            this._btnAddNewConfig.Location = new System.Drawing.Point(680, 24);
             this._btnAddNewConfig.Name = "_btnAddNewConfig";
-            this._btnAddNewConfig.Size = new System.Drawing.Size(158, 23);
+            this._btnAddNewConfig.Size = new System.Drawing.Size(107, 23);
             this._btnAddNewConfig.TabIndex = 25;
             this._btnAddNewConfig.Text = "THÊM CẤU HÌNH";
-            this._btnAddNewConfig.UseVisualStyleBackColor = true;
+            this._btnAddNewConfig.UseVisualStyleBackColor = false;
+            // 
+            // _btnDelete
+            // 
+            this._btnDelete.BackColor = System.Drawing.Color.Red;
+            this._btnDelete.ForeColor = System.Drawing.Color.White;
+            this._btnDelete.Location = new System.Drawing.Point(558, 24);
+            this._btnDelete.Name = "_btnDelete";
+            this._btnDelete.Size = new System.Drawing.Size(107, 23);
+            this._btnDelete.TabIndex = 26;
+            this._btnDelete.Text = "XÓA CẤU HÌNH";
+            this._btnDelete.UseVisualStyleBackColor = false;
             // 
             // frmSettings
             // 
@@ -810,6 +824,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 832);
+            this.Controls.Add(this._btnDelete);
             this.Controls.Add(this._btnAddNewConfig);
             this.Controls.Add(this._txtProfileName);
             this.Controls.Add(this.label20);
@@ -921,5 +936,6 @@
         private System.Windows.Forms.TextBox _txtProfileName;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Button _btnAddNewConfig;
+        private System.Windows.Forms.Button _btnDelete;
     }
 }
