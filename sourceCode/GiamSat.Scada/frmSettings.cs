@@ -54,7 +54,7 @@ namespace GiamSat.Scada
 
                     string defaultJson = JsonConvert.SerializeObject(_configs, Formatting.Indented);
                     File.WriteAllText(_filePath, defaultJson);
-                    MessageBox.Show("LƯU CÀI ĐẶT THÀNH CÔNG.");
+                    MessageBox.Show($"LƯU CÀI ĐẶT CHO {_configItem.ConfigName} THÀNH CÔNG.");
 
                     // Read the JSON file
                     GlobalVariable.InvokeIfRequired(this, () =>
@@ -89,10 +89,33 @@ namespace GiamSat.Scada
             {
                 _configItem = new Configs();
 
-                _configItem.Config = _configs.FirstOrDefault()?.Config;
+                //var c = _configs.FirstOrDefault();
+
+                //_configItem.Config = c.Config;
+
                 _isUpdate = false;
 
                 ShowControl(_configItem);
+            };
+
+            _btnDelete.Click += (s, o) =>
+            {
+                if (_configItem == null)
+                {
+                    MessageBox.Show("Vui lòng chọn cấu hình cần xóa.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (MessageBox.Show($"Bạn có chắc chắn muốn xóa cầu hỉnh {_configItem.ConfigName}?", "XÁC NHẬN", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    return;
+
+                _configs.Remove(_configItem);
+
+                string defaultJson = JsonConvert.SerializeObject(_configs, Formatting.Indented);
+                File.WriteAllText(_filePath, defaultJson);
+                MessageBox.Show("LƯU CÀI ĐẶT THÀNH CÔNG.");
+
+                FrmSettings_Load(null, null);
             };
 
             #region Đăng ký các sự kiện của các controls để cập nhật các giá trị cài đặt mới.
@@ -621,6 +644,7 @@ namespace GiamSat.Scada
             string jsonContent = File.ReadAllText(_filePath);
             _configs = JsonConvert.DeserializeObject<List<Configs>>(jsonContent);
 
+            _cbSelectConfig.Items.Clear();
             foreach (var item in _configs)
             {
                 _cbSelectConfig.Items.Add(item.ConfigName);
