@@ -170,16 +170,40 @@ namespace GiamSat.Scada
                             // Set the selected item to the first one in the list
                             _cbSelectConfig.SelectedItem = nf.ConfigName;
 
-                            _labUnitS1.Text = _configItem.Config.Unit;
-                            _labUnitS2.Text = _configItem.Config.Unit;
-                            _labUnitS3.Text = _configItem.Config.Unit;
+                            //_labUnitS1.Text = _configItem.Config.Unit;
+                            //_labUnitS2.Text = _configItem.Config.Unit;
+                            //_labUnitS3.Text = _configItem.Config.Unit;
 
-                            SENSOR_1_ValueChanged(null, _tagS1);
-                            SENSOR_2_ValueChanged(null, _tagS2);
-                            SENSOR_3_ValueChanged(null, _tagS3);
+                            //SENSOR_1_ValueChanged(null, _tagS1);
+                            //SENSOR_2_ValueChanged(null, _tagS2);
+                            //SENSOR_3_ValueChanged(null, _tagS3);
                         }
                     }
                 }
+            };
+
+            _cbSelectConfig.SelectedIndexChanged += (s, o) =>
+            {
+                ComboBox cb = (ComboBox)s;
+                var configName = _cbSelectConfig.SelectedItem.ToString();
+
+                _configItem = new Configs();
+                _configItem = _configs.FirstOrDefault(x => x.ConfigName == configName);
+                if (_configItem == null)
+                {
+                    MessageBox.Show("Không tìm thấy cấu hình này.", "CẢNH BÁO", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                configName = _configItem.ConfigName;
+
+                _labUnitS1.Text = _configItem.Config.Unit;
+                _labUnitS2.Text = _configItem.Config.Unit;
+                _labUnitS3.Text = _configItem.Config.Unit;
+
+                SENSOR_1_ValueChanged(null, _tagS1);
+                SENSOR_2_ValueChanged(null, _tagS2);
+                SENSOR_3_ValueChanged(null, _tagS3);
             };
 
             //reset these control results.
@@ -240,11 +264,14 @@ namespace GiamSat.Scada
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            MessageBox.Show("Bạn chắc chắn muốn tắt app?!", "Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (MessageBox.Show("Bạn chắc chắn muốn tắt app?!", "Cảnh báo", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
+                e.Cancel = true;
+                return;
+            }
 
             _easyDriverConnector.ConnectionStatusChaged -= _easyDriverConnector_ConnectionStatusChaged;
             _easyDriverConnector.Started -= _easyDriverConnector_Started;
-            //e.Cancel = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -252,7 +279,6 @@ namespace GiamSat.Scada
             #region Serilog initial
             Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
-            .WriteTo.Console()
             .WriteTo.File("logs/AppLog.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
             #endregion
