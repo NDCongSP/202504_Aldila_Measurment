@@ -28,5 +28,10 @@ namespace GiamSat.Scada
         /// Settings cho phần apple.
         /// </summary>
         public AppleSettingsModel AppleSettings { get; set; } = new AppleSettingsModel();
+
+        /// <summary>
+        /// Thời gian delay (tính bằng ms) trước khi bắt đầu xử lý dữ liệu.
+        /// </summary>
+        public int DelayToProcess { get; set; } = 0;
     }
 }

@@ -571,6 +571,12 @@ namespace GiamSat.Scada
 
                 _configItem.Config.ActiveCheckHeadStraight = ck.Checked;
             };
+
+            _txtDelayTimeToProcess.TextChanged+=(s,o) =>
+            {
+                TextBox t = (TextBox)s;
+                _configItem.Config.DelayToProcess = int.TryParse(t.Text, out int value) ? value : 0;
+            };
             #endregion
             #endregion
 
@@ -688,6 +694,7 @@ namespace GiamSat.Scada
                 _txtOffset.Text = model.Config.Offset.ToString();
                 _txtValueActive.Text = model.Config.ValueActive.ToString();
                 _checkBoxOnOffCheckHeadStraight.Checked = model.Config.ActiveCheckHeadStraight;
+                _txtDelayTimeToProcess.Text = model.Config.DelayToProcess.ToString();
 
                 #region Apple
                 var sensorsAppleSensors = _configItem.Config.AppleSettings?.Sensors?.ToList();

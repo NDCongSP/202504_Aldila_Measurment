@@ -103,6 +103,8 @@
             this.label20 = new System.Windows.Forms.Label();
             this._btnAddNewConfig = new System.Windows.Forms.Button();
             this._btnDelete = new System.Windows.Forms.Button();
+            this._txtDelayTimeToProcess = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -617,6 +619,8 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this._txtDelayTimeToProcess);
+            this.groupBox7.Controls.Add(this.label21);
             this.groupBox7.Controls.Add(this._checkBoxOnOffCheckHeadStraight);
             this.groupBox7.Controls.Add(this._txtValueActive);
             this.groupBox7.Controls.Add(this.label14);
@@ -640,7 +644,7 @@
             // _checkBoxOnOffCheckHeadStraight
             // 
             this._checkBoxOnOffCheckHeadStraight.AutoSize = true;
-            this._checkBoxOnOffCheckHeadStraight.Location = new System.Drawing.Point(18, 116);
+            this._checkBoxOnOffCheckHeadStraight.Location = new System.Drawing.Point(18, 98);
             this._checkBoxOnOffCheckHeadStraight.Name = "_checkBoxOnOffCheckHeadStraight";
             this._checkBoxOnOffCheckHeadStraight.Size = new System.Drawing.Size(194, 17);
             this._checkBoxOnOffCheckHeadStraight.TabIndex = 5;
@@ -714,7 +718,7 @@
             // _txtTagPath
             // 
             this._txtTagPath.Enabled = false;
-            this._txtTagPath.Location = new System.Drawing.Point(316, 114);
+            this._txtTagPath.Location = new System.Drawing.Point(316, 123);
             this._txtTagPath.Name = "_txtTagPath";
             this._txtTagPath.Size = new System.Drawing.Size(433, 20);
             this._txtTagPath.TabIndex = 11;
@@ -722,7 +726,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(316, 98);
+            this.label10.Location = new System.Drawing.Point(316, 102);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(61, 13);
             this.label10.TabIndex = 10;
@@ -817,6 +821,22 @@
             this._btnDelete.TabIndex = 26;
             this._btnDelete.Text = "XÓA CẤU HÌNH";
             this._btnDelete.UseVisualStyleBackColor = false;
+            // 
+            // _txtDelayTimeToProcess
+            // 
+            this._txtDelayTimeToProcess.Location = new System.Drawing.Point(139, 123);
+            this._txtDelayTimeToProcess.Name = "_txtDelayTimeToProcess";
+            this._txtDelayTimeToProcess.Size = new System.Drawing.Size(128, 20);
+            this._txtDelayTimeToProcess.TabIndex = 21;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(18, 127);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(104, 13);
+            this.label21.TabIndex = 20;
+            this.label21.Text = "Độ trễ tính toán (ms)";
             // 
             // frmSettings
             // 
@@ -937,5 +957,7 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Button _btnAddNewConfig;
         private System.Windows.Forms.Button _btnDelete;
+        private System.Windows.Forms.TextBox _txtDelayTimeToProcess;
+        private System.Windows.Forms.Label label21;
     }
 }
