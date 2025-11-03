@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using EasyScada.Core;
 using Newtonsoft.Json;
 using System;
@@ -41,6 +41,7 @@ namespace GiamSat.Scada
         private double _valueSensor1 = 0, _valueSensor2 = 0, _valueSensor3 = 0;
 
         private bool _newTransaction = false;//biến để check mỗi lần giá trị đo từ 0 thay đổi, thì kích hoặt đo.
+        private bool _isProcessing = false;
 
         TagValueChangedEventArgs _tagS1, _tagS2, _tagS3;
 
@@ -297,6 +298,12 @@ namespace GiamSat.Scada
             try
             {
                 t.Enabled = false;
+                if (_isProcessing)
+                {
+                    t.Enabled = true;
+                    return;
+                }
+                _isProcessing = true;
                 GlobalVariable.InvokeIfRequired(this, () => { _labTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); });
 
                 #region Kiểm tra
@@ -304,11 +311,11 @@ namespace GiamSat.Scada
                 {
                     if (_formActive == "APPLE")
                     {
-                        AppleCheck();
+                        await AppleCheckAsync();
                     }
                     else
                     {
-                        ArrowCheck();
+                        await ArrowCheckAsync();
                     }
 
                     //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
@@ -335,6 +342,7 @@ namespace GiamSat.Scada
             catch (Exception ex) { Log.Error(ex, "From _timer_Tick"); }
             finally
             {
+                _isProcessing = false;
                 t.Enabled = true;
             }
         }
@@ -442,18 +450,23 @@ namespace GiamSat.Scada
         #endregion
 
         #region Methods
-        private void AppleCheck()
+        private async Task AppleCheckAsync()
         {
+            if (_configItem?.Config == null) return;
+            if (_configItem.Config.DelayToProcess > 0)
+                await Task.Delay(_configItem.Config.DelayToProcess);
+
             string sensorView = string.Empty;
             string dataMax = _configItem.Config.AppleSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
-            var sensorCount = _configItem.Config.AppleSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
-            double valueFinal = 0;
-            List<double> valueZoneList = new List<double>();
-            EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
-            string limit = string.Empty;
+            var sensorsCfg = _configItem.Config.AppleSettings?.Sensors;
+            if (sensorsCfg == null || sensorsCfg.Count == 0)
+            {
+                Log.Warning("AppleCheckAsync: No sensors configured");
+                return;
+            }
 
-            var sensors = _configItem.Config.AppleSettings.Sensors.ToList();
-            foreach (var item in sensors)
+            List<double> valueZoneList = new List<double>();
+            foreach (var item in sensorsCfg)
             {
                 if (item == EnumSensor.SENSOR_1)
                     valueZoneList.Add(_valueSensor1);
@@ -462,25 +475,31 @@ namespace GiamSat.Scada
                 else
                     valueZoneList.Add(_valueSensor3);
 
-                if (string.IsNullOrEmpty(sensorView))
-                {
-                    sensorView = item.ToString();
-                }
-                else
-                    sensorView = string.Join(", ", sensorView, item.ToString());
+                sensorView = string.IsNullOrEmpty(sensorView)
+                    ? item.ToString()
+                    : string.Join(", ", sensorView, item.ToString());
             }
 
-            //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
-            valueFinal = _configItem.Config.AppleSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
-
-            //kiểm tra
-            foreach (var item in _configItem.Config.AppleSettings.Zones)
+            if (valueZoneList.Count == 0)
             {
-                if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
+                Log.Warning("AppleCheckAsync: value list empty");
+                return;
+            }
+
+            double valueFinal = _configItem.Config.AppleSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
+            EnumApple_Ok_NG result = EnumApple_Ok_NG.NG;
+            string limit = string.Empty;
+            var appleZones = _configItem.Config.AppleSettings?.Zones;
+            if (appleZones != null)
+            {
+                foreach (var z in appleZones)
                 {
-                    result = item.ZoneName;
-                    limit = $"{item.ZoneName.ToString()} từ {item.FromValue} đến {item.ToValue}";
-                    break;
+                    if (valueFinal >= z.FromValue && valueFinal <= z.ToValue)
+                    {
+                        result = z.ZoneName;
+                        limit = $"{z.ZoneName.ToString()} từ {z.FromValue} đến {z.ToValue}";
+                        break;
+                    }
                 }
             }
 
@@ -502,23 +521,25 @@ namespace GiamSat.Scada
             });
         }
 
-        private void ArrowCheck()
+        private async Task ArrowCheckAsync()
         {
+            if (_configItem?.Config == null) return;
+            if (_configItem.Config.DelayToProcess > 0)
+                await Task.Delay(_configItem.Config.DelayToProcess);
+
             string sensorView = string.Empty;
             string dataMax = _configItem.Config.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
             string zoneLimit = string.Empty;
 
-            var sensorCount = _configItem.Config.ArrowSettings.Sensors.Count;//số lượng sensor được chọn để kiểm tra.
-            double valueFinal = 0;//giá trị cuối cùng dùng để phân Zone.
-            List<double> valueZoneList = new List<double>();//list chứa các giá trị của các sensor được chọn để phân zone.
-            EnumArrowZoneName zone = EnumArrowZoneName.V1;//tên zone cuối cùng được xác định.
+            var sensorsCfg = _configItem.Config.ArrowSettings?.Sensors;
+            if (sensorsCfg == null || sensorsCfg.Count == 0)
+            {
+                Log.Warning("ArrowCheckAsync: No sensors configured");
+                return;
+            }
 
-            double compareValue = 0;//kiểm tra OK/NG
-            string compareDisplay = string.Empty;
-
-            //lấy các giá trị của cảm biến được chọn phân ZONE.
-            var sensors = _configItem.Config.ArrowSettings.Sensors.ToList();
-            foreach (var item in sensors)
+            List<double> valueZoneList = new List<double>();
+            foreach (var item in sensorsCfg)
             {
                 if (item == EnumSensor.SENSOR_1)
                     valueZoneList.Add(_valueSensor1);
@@ -527,67 +548,57 @@ namespace GiamSat.Scada
                 else
                     valueZoneList.Add(_valueSensor3);
 
-                if (string.IsNullOrEmpty(sensorView))
-                {
-                    sensorView = item.ToString();
-                }
-                else
-                    sensorView = string.Join(", ", sensorView, item.ToString());
+                sensorView = string.IsNullOrEmpty(sensorView)
+                    ? item.ToString()
+                    : string.Join(", ", sensorView, item.ToString());
             }
-            //kiểm tra xem phần chọn các sensor phân zone theo điều kiện, nếu thỏa mãn thì add thêm vào.
-            var sensorsConditons = _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.Sensors.ToList();
+
+            // chọn thêm sensor theo điều kiện
+            var sensorsConditons = _configItem.Config.ArrowSettings?.ArrowChooseSensorAddCompareSettings?.Sensors?.ToList() ?? new List<EnumSensor>();
             foreach (var item in sensorsConditons)
             {
                 if (item == EnumSensor.SENSOR_1 && _valueSensor1 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor1);
-
-                    if (string.IsNullOrEmpty(sensorView))
-                    {
-                        sensorView = item.ToString();
-                    }
-                    else
-                        sensorView = string.Join(", ", sensorView, item.ToString());
+                    sensorView = string.Join(", ", sensorView, item.ToString());
                 }
                 else if (item == EnumSensor.SENSOR_2 && _valueSensor2 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor2);
-
-                    if (string.IsNullOrEmpty(sensorView))
-                    {
-                        sensorView = item.ToString();
-                    }
-                    else
-                        sensorView = string.Join(", ", sensorView, item.ToString());
+                    sensorView = string.Join(", ", sensorView, item.ToString());
                 }
                 else if (item == EnumSensor.SENSOR_3 && _valueSensor3 > _configItem.Config.ArrowSettings.ArrowChooseSensorAddCompareSettings.ConditionsValue)
                 {
                     valueZoneList.Add(_valueSensor3);
-
-                    if (string.IsNullOrEmpty(sensorView))
-                    {
-                        sensorView = item.ToString();
-                    }
-                    else
-                        sensorView = string.Join(", ", sensorView, item.ToString());
+                    sensorView = string.Join(", ", sensorView, item.ToString());
                 }
             }
 
-            //lấy giá trị lớn nhất hoặc nhỏ nhất trong các giá trị của cảm biến để phân zone dựa vào biến cài đặt DataMax.
-            valueFinal = _configItem.Config.ArrowSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
-
-            //kiểm tra
-            foreach (var item in _configItem.Config.ArrowSettings.Zones)
+            if (valueZoneList.Count == 0)
             {
-                if (valueFinal >= item.FromValue && valueFinal <= item.ToValue)
+                Log.Warning("ArrowCheckAsync: value list empty");
+                return;
+            }
+
+            double valueFinal = _configItem.Config.ArrowSettings.DataMax == true ? valueZoneList.Max() : valueZoneList.Min();
+            EnumArrowZoneName zone = EnumArrowZoneName.V1;
+
+            var arrowZones = _configItem.Config.ArrowSettings?.Zones;
+            if (arrowZones != null)
+            {
+                foreach (var z in arrowZones)
                 {
-                    zone = item.ZoneName;
-                    zoneLimit = $"{zone.ToString()}: Từ {item.FromValue} đến {item.ToValue}";
-                    break;
+                    if (valueFinal >= z.FromValue && valueFinal <= z.ToValue)
+                    {
+                        zone = z.ZoneName;
+                        zoneLimit = $"{zone.ToString()}: Từ {z.FromValue} đến {z.ToValue}";
+                        break;
+                    }
                 }
             }
 
-            //tính giá trị OK/NG.
+            double compareValue;
+            string compareDisplay;
             if (_configItem.Config.ArrowSettings.S3_S1OrS1_S3)
             {
                 compareValue = Math.Round(_valueSensor3 - _valueSensor1, _configItem.Config.DecimalNum);
