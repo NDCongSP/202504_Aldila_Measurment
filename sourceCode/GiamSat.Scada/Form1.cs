@@ -42,6 +42,7 @@ namespace GiamSat.Scada
 
         private bool _newTransaction = false;//biến để check mỗi lần giá trị đo từ 0 thay đổi, thì kích hoặt đo.
         private bool _isProcessing = false;
+        private bool _isFirstCheck = true;
 
         TagValueChangedEventArgs _tagS1, _tagS2, _tagS3;
 
@@ -306,6 +307,27 @@ namespace GiamSat.Scada
                 _isProcessing = true;
                 GlobalVariable.InvokeIfRequired(this, () => { _labTime.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); });
 
+                //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
+                if (((_valueSensor1 <= 0 && _valueSensor2 <= 0 && _valueSensor3 <= 0)
+                    || _valueSensor1 >= _configItem.Config.ValueActive
+                    || _valueSensor2 >= _configItem.Config.ValueActive
+                    || _valueSensor3 >= _configItem.Config.ValueActive)
+                    && _newTransaction == true
+                   )
+                {
+                    _newTransaction = false;
+                    _isFirstCheck = true;
+
+                    GlobalVariable.InvokeIfRequired(this, () =>
+                    {
+                        _labArrowZone.Text = _labArrowResultHead.Text = _labAppleResult.Text = null;
+                        _labArrowZone.BackColor = _labArrowResultHead.BackColor = _labAppleResult.BackColor = Color.White;
+
+                        _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
+                        _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
+                    });
+                }
+
                 #region Kiểm tra
                 if (_newTransaction)
                 {
@@ -316,25 +338,6 @@ namespace GiamSat.Scada
                     else
                     {
                         await ArrowCheckAsync();
-                    }
-
-                    //nếu cả 3 giá trị của sensor đều = 0 thì reset biến _newTransaction để báo hiện máy không có đo, ngắt kiểm tra.
-                    if ((_valueSensor1 <= 0 && _valueSensor2 <= 0 && _valueSensor3 <= 0)
-                        || _valueSensor1 >= _configItem.Config.ValueActive
-                        || _valueSensor2 >= _configItem.Config.ValueActive
-                        || _valueSensor3 >= _configItem.Config.ValueActive
-                        )
-                    {
-                        _newTransaction = false;
-
-                        GlobalVariable.InvokeIfRequired(this, () =>
-                        {
-                            _labArrowZone.Text = _labArrowResultHead.Text = _labAppleResult.Text = null;
-                            _labArrowZone.BackColor = _labArrowResultHead.BackColor = _labAppleResult.BackColor = Color.White;
-
-                            _labArrowValueFinal.Text = _labArrowValueHead.Text = _labAppleValueFinal.Text = "0";
-                            _labArrowValueFinal.ForeColor = _labArrowValueHead.ForeColor = _labAppleValueFinal.ForeColor = Color.Black;
-                        });
                     }
                 }
                 #endregion
@@ -452,9 +455,14 @@ namespace GiamSat.Scada
         #region Methods
         private async Task AppleCheckAsync()
         {
-            if (_configItem?.Config == null) return;
-            if (_configItem.Config.DelayToProcess > 0)
-                await Task.Delay(_configItem.Config.DelayToProcess);
+            if (_isFirstCheck)
+            {
+                if (_configItem?.Config == null) return;
+                if (_configItem.Config.DelayToProcess > 0)
+                    await Task.Delay(_configItem.Config.DelayToProcess);
+
+                _isFirstCheck = false;
+            }
 
             string sensorView = string.Empty;
             string dataMax = _configItem.Config.AppleSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
@@ -523,9 +531,14 @@ namespace GiamSat.Scada
 
         private async Task ArrowCheckAsync()
         {
-            if (_configItem?.Config == null) return;
-            if (_configItem.Config.DelayToProcess > 0)
-                await Task.Delay(_configItem.Config.DelayToProcess);
+            if(_isFirstCheck)
+            {
+                if (_configItem?.Config == null) return;
+                if (_configItem.Config.DelayToProcess > 0)
+                    await Task.Delay(_configItem.Config.DelayToProcess);
+
+                _isFirstCheck = false;
+            }
 
             string sensorView = string.Empty;
             string dataMax = _configItem.Config.ArrowSettings.DataMax == true ? "Data lớn nhất" : "Data nhỏ nhất";
